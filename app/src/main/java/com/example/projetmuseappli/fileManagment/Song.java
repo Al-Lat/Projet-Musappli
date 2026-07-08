@@ -42,20 +42,21 @@ public class Song implements Serializable {
             Collections.unmodifiableList(Arrays.asList("mp3", "flac", "ogg"));
 
 
-    public Song(UUID uuid, String Extension, String title){
+    public Song(UUID uuid, String Extension, String titre){
         this.UUID = uuid;
 
         if(EXTENSIONS_VALIDES.contains(Extension)){
             this.Extension = Extension;
         } else {
-            String message = "L'extention du fichier : "+title+"\nUUID : "+uuid+" est invalide. Extentions valide : "+getStringExtensionValides();
+            String message = "L'extention du fichier : "+titre+"\nUUID : "+uuid+" est invalide. Extentions valide : "+getStringExtensionValides();
             throw new IllegalArgumentException(message);
         }
 
-        if(title.isEmpty()){
+        if(titre.isEmpty()){
             throw new IllegalArgumentException("le titre ne peut pas etre vide");
             //TODO : vérification des doublons
         }
+        this.titre = titre;
 
         this.dateImport = LocalDate.now();
 

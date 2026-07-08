@@ -110,6 +110,10 @@ public class Masterlist implements Serializable {
         return instance;
     }
 
+    public ArrayList<Song> getMasterlistArrayList() {
+        return masterlistArrayList;
+    }
+
     public void addSong(Song song){
         masterlistHashMap.put(song.getUUID(), song);
         masterlistArrayList.add(song);
