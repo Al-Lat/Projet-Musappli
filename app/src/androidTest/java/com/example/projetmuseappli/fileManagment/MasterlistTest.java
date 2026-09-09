@@ -52,7 +52,7 @@ public class MasterlistTest {
         masterlist.addSong(new Song(uuid, "flac", title));
         
         // Sauvegarde
-        masterlist.save(context);
+        masterlist.save();
         
         // Simuler un redémarrage en forçant une nouvelle initialisation
         // (Note: Dans un vrai test unitaire on utiliserait de l'injection, 

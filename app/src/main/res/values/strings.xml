@@ -1,3 +1,30 @@
 <resources>
+    <!--Global / racine-->
     <string name="app_name">Projet Museappli</string>
+    <string name="master_playlist_name">Tout les morceaux</string>
+
+    <!--Menu contextuelle son-->
+    <string name="delete_button_text">Supprimer</string>
+    <string name="delete_confirmation_title">Confirmation de suppression</string>
+    <string name="delete_confirmation_message">Voulez-vous vraiment supprimer cet élément ?</string>
+    <string name="delete_confirmation_positive_button">Oui</string>
+    <string name="delete_confirmation_negative_button">Non</string>
+
+    <!--Importation d'un son-->
+    <string name="import_title">Importer un son</string>
+    <string name="import_button_text">Importer</string>
+
+    <!--ItemCard (item pour chaque son)-->
+    <string name="item_card_date_format">Ajouté le: %s</string>
+    <string name="item_card_extension_format">Extension: %s</string>
+    <string name="action_delete_song">action_delete_song</string>
+
+    <!--Menus Contextuelles-->
+    <string name="import_song">Importer un son</string>
+    <string name="create_new_playlist">Créer une nouvelle playlist</string>
+    <string name="add_to_playlist">Ajouter à une playlist</string>
+
+    <!-- Autres-->
+    <string name="FEATURE_TODO">TODO : Ajouter à une playlist</string>
+
 </resources>

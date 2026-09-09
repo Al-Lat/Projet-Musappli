@@ -30,10 +30,9 @@ import java.util.UUID;
 public class LocalStorageImportManager {
     public static void importAudioFile(Context context,Uri uriFichier) {
 
-        String nomFichier = Utilitaries.getFileNameFromUri(context, uriFichier);
-
         //Récupérer le nom du fichier
-        String nom = nomFichier.substring(0, nomFichier.lastIndexOf('.'));
+        String nomFichier = Utilitaries.getFileNameFromUri(context, uriFichier);
+        String nomSon = nomFichier.substring(0, nomFichier.lastIndexOf('.'));
 
         //Récupérer l'extension du fichier
         String extension = nomFichier.substring(nomFichier.lastIndexOf('.') + 1);
@@ -53,7 +52,7 @@ public class LocalStorageImportManager {
         }
 
         //Créer l'objet Song liée au fichier
-        Song song = new Song(uuid, extension, nom);
+        Song song = new Song(uuid, extension, nomSon);
 
         //Ajouter l'objet Song à la Masterlist
         Masterlist.getInstance().addSong(song);

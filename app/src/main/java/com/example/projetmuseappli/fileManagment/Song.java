@@ -19,11 +19,14 @@
 
 package com.example.projetmuseappli.fileManagment;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +45,7 @@ public class Song implements Serializable {
             Collections.unmodifiableList(Arrays.asList("mp3", "flac", "ogg"));
 
 
-    public Song(UUID uuid, String Extension, String titre){
+    public Song(UUID uuid, @NonNull String Extension, @NonNull String titre){
         this.UUID = uuid;
 
         if(EXTENSIONS_VALIDES.contains(Extension)){
@@ -90,6 +93,34 @@ public class Song implements Serializable {
         return this.dateImport.format(DateTimeFormatter.ofPattern(format));
     }
 
+    /**
+     * indique si l'extention est valide
+     * @param extension String representant l'extention
+     * @return boolean : true si l'extention est valide, false sinon
+     */
+    public static boolean isExtentionValide(String extension){
+        return EXTENSIONS_VALIDES.contains(extension.toLowerCase());
+    }
+
+
+
+
+
+
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "UUID=" + UUID +
+                ", Extension='" + Extension + '\'' +
+                ", titre='" + titre + '\'' +
+                ", dateImport=" + dateImport +
+                '}';
+    }
+
+
+
+
     /*
      * Renvoie la liste des extensions valides sous la forme "ext1, ext2, ext3"
      */
@@ -102,7 +133,38 @@ public class Song implements Serializable {
         return sb.toString();
     }
 
-    public static boolean isExtentionValide(String extension){
-        return EXTENSIONS_VALIDES.contains(extension.toLowerCase());
+    /**
+     * Classe permetant de trier les objets Song par leur nom via Collection.sort()
+     */
+    public static class SongNameComparator implements Comparator<Song> {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s1.getTitre().compareTo(s2.getTitre());
+        }
     }
+
+    /**
+     * Classe permetant de trier les objets Song par leur date d'ajout sur l'application via Collection.sort()
+     */
+    public static class SongDateComparator implements Comparator<Song> {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s1.getDateImport().compareTo(s2.getDateImport());
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

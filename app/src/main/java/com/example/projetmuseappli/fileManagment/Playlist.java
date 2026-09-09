@@ -18,12 +18,16 @@
 
 package com.example.projetmuseappli.fileManagment;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Playlist implements Serializable {
 
-    private ArrayList<Song> playlist;
+    private LinkedList<Song> playlist;
     private String nom;
     private static final long serialVersionUID = 1L;
 
@@ -32,10 +36,50 @@ public class Playlist implements Serializable {
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
         this.nom = nom;
-        this.playlist = new ArrayList<>();
+        this.playlist = new LinkedList<>();
         this.playlist.add(song);
 
     }
 
+    public Playlist(String nom, List<Song> list){
+        if(nom.isEmpty()){
+            throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
+        }
+        this.nom = nom;
+        this.playlist = new LinkedList<>(list);
 
+    }
+
+    public void addSong(@NonNull Song song){
+
+        if(this.playlist.contains(song)){
+            throw new IllegalArgumentException("La playlist contient déjà ce son");
+        }
+
+        this.playlist.add(song);
+    }
+
+    public void removeSong(@NonNull Song song){
+        if(!this.playlist.contains(song)){
+            throw new IllegalArgumentException("La playlist ne contient pas ce son");
+        }
+
+        if(this.playlist.size()==1){
+            throw new IllegalArgumentException("La playlist ne peut pas être vide");
+        }
+
+        this.playlist.remove(song);
+    }
+
+    public LinkedList<Song> getPlaylist() {
+        return playlist;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(@NonNull String nom) {
+        this.nom = nom;
+    }
 }

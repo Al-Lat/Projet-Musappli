@@ -26,24 +26,31 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class Masterlist implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 165461L;
     private static final String FILE_NAME = "masterlist.ser";
 
+    private static Context appContext;
+
+    /*Collection des Song sous forme de hashmap pour la rapidité de recherche*/
     private HashMap<UUID,Song> masterlistHashMap;
-    private ArrayList<Song> masterlistArrayList;
-    private ArrayList<Song> allPlaylistList;
+
+    /*Collection des Song sous forme de LinkedList pour la rapidité d'ordonencement*/
+    private LinkedList<Song> masterlistList;
+
+    /*Collection des Playlist sous forme de LinkedList pour la rapidité d'ordonencement*/
+    private LinkedList<Playlist> allPlaylistList;
 
     private static volatile Masterlist instance;
 
     private Masterlist(){
         masterlistHashMap = new HashMap<>();
-        masterlistArrayList = new ArrayList<>();
-        allPlaylistList = new ArrayList<>();
+        masterlistList = new LinkedList<>();
+        allPlaylistList = new LinkedList<>();
     }
 
     /**
@@ -52,6 +59,12 @@ public class Masterlist implements Serializable {
      * @param context Le contexte Android pour accéder aux fichiers
      */
     public static void init(Context context) {
+
+        // On récupère le contexte global de l'application
+        if (context != null) {
+            appContext = context.getApplicationContext();
+        }
+
         if (instance == null) {
             synchronized (Masterlist.class) {
                 if (instance == null) {
@@ -60,7 +73,8 @@ public class Masterlist implements Serializable {
                         // readObject() appelle automatiquement readResolve() si elle est définie
                         instance = (Masterlist) ois.readObject();
                     } catch (Exception e) {
-                        Log.i("Masterlist", "Aucune sauvegarde trouvée ou erreur de lecture, création d'une nouvelle liste.");
+                        Log.i("Masterlist", "Aucune sauvegarde trouvée ou erreur " +
+                                "de lecture, création d'une nouvelle liste.");
                         instance = new Masterlist();
                     }
                 }
@@ -85,10 +99,9 @@ public class Masterlist implements Serializable {
 
     /**
      * Sauvegarde l'état actuel de la Masterlist dans le stockage interne.
-     * @param context Le contexte Android
      */
-    public void save(Context context) {
-        try (FileOutputStream fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+    public void save() {
+        try (FileOutputStream fos = appContext.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this);
         } catch (IOException e) {
@@ -109,14 +122,19 @@ public class Masterlist implements Serializable {
         }
         return instance;
     }
-
-    public ArrayList<Song> getMasterlistArrayList() {
-        return masterlistArrayList;
+    /*Gestion de tout les sons*/
+    public LinkedList<Song> getMasterlistList() {
+        return masterlistList;
+    }
+    public Playlist getMasterPlaylist(String nomPlaylist){
+        return new Playlist(nomPlaylist, masterlistList);
     }
 
+    /*Gestion des sons*/
     public void addSong(Song song){
         masterlistHashMap.put(song.getUUID(), song);
-        masterlistArrayList.add(song);
+        masterlistList.add(song);
+        this.save();
 
     }
 
@@ -125,17 +143,35 @@ public class Masterlist implements Serializable {
     }
 
     public Song getSong(int index){
-        return masterlistArrayList.get(index);
+        return masterlistList.get(index);
     }
-    
+
     public boolean removeSong(UUID uuid){
-        for(Song song : masterlistArrayList){
+        for(Song song : masterlistList){
             if(song.getUUID().equals(uuid)){
-                masterlistArrayList.remove(song);
+                masterlistList.remove(song);
                 masterlistHashMap.remove(uuid);
+                save();
                 return true;
             }
         }
         return false;
     }
+
+    /*Gestion des playlist*/
+    public void addPlaylist(Playlist playlist){
+        allPlaylistList.add(playlist);
+        save();
+    }
+
+    public void removePlaylist(Playlist playlist){
+        allPlaylistList.remove(playlist);
+        save();
+    }
+
+    public LinkedList<Playlist> getAllPlaylistList() {
+        return allPlaylistList;
+    }
+    
+
 }

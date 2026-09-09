@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -10,23 +11,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="Song Title" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Logo Son"
+            tools:srcCompat="@tools:sample/avatars" />
 
-        <TextView
-            android:id="@+id/textViewExtension"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Extension: mp3"
-            android:textColor="@android:color/darker_gray" />
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="Song Title" />
+
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ajouté le: 01/01/2023"
+                android:textColor="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/textViewExtension"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Extension: mp3"
+                android:textColor="@android:color/darker_gray" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/buttonBurger"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:padding="0dp"
+            android:scaleType="fitCenter"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/menuburger"
+            android:contentDescription="Options" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
