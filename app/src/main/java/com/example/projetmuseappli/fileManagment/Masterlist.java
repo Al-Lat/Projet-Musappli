@@ -47,6 +47,12 @@ public class Masterlist implements Serializable {
 
     private static volatile Masterlist instance;
 
+    /**
+     * Tableau de Strings correspondant a chacun des formats de fichiers accepté par l'application.
+     * les formats ont leurs designations systeme android, par exemple flac est audio/x-flac
+     */
+    final public static String[] ACCEPTED_FORMATS = {"audio/mpeg", "audio/x-flac", "audio/ogg", "application/ogg"};
+
     private Masterlist(){
         masterlistHashMap = new HashMap<>();
         masterlistList = new LinkedList<>();
@@ -172,6 +178,19 @@ public class Masterlist implements Serializable {
     public LinkedList<Playlist> getAllPlaylistList() {
         return allPlaylistList;
     }
-    
+
+    /**
+     * Appelle "isEmpty" sur la hashmap interne de cette classe
+     * @throws IllegalStateException si l'instance est null
+     * @return  true si la liste est vide
+     *          false sinon
+     */
+    public boolean isEmpty(){
+        if (this.instance == null){
+            throw new IllegalStateException("The Masterlist instance is null and cannot be tested");
+        }
+
+        return masterlistHashMap.isEmpty();
+    }
 
 }

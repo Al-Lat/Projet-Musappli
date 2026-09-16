@@ -17,24 +17,17 @@ import java.util.List;
  */
 public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
 
-    /*Interface indiquant les evenements possible sur un objet SongViewHolder*/
-    public interface OnSongClickListener {
-        void onSongClick(Song song, int position); // Clic sur toute la ligne
-        void onMoreButtonClick(Song song, int position, View view); // Clic sur le bouton d'options
-    }
 
     /*Liste des sons à afficher*/
     private List<Song> songList;
 
-    /*Object listener de cet adapter*/
-    private OnSongClickListener listener;
 
     public SongAdapter(List<Song> songList) {
         this.songList = songList;
     }
 
-    public void setOnSongClickListener(OnSongClickListener listener) {
-        this.listener = listener;
+    public void setOnSongClickListener( ) {
+
     }
 
     @NonNull
@@ -57,21 +50,21 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
                         R.string.item_card_extension_format), currentSong.getExtension()
         ));
 
-        /*Gestion des actions*/
-        holder.itemView.setOnClickListener(v -> { // Gérer le clic sur l'item complet
-            if (listener != null) {
-                listener.onSongClick(currentSong, holder.getAdapterPosition());
-            }
-        });
-
-
-        // Note : assure-toi que l'ID dans SongViewHolder correspond bien au bouton du XML
-        holder.buttonBurger.setOnClickListener(v -> { // Gérer le clic sur le bouton burger
-            if (listener != null) {
-                // On passe la 'view' (le bouton) pour pouvoir ancrer un menu popup dessus plus tard
-                listener.onMoreButtonClick(currentSong, holder.getAdapterPosition(), v);
-            }
-        });
+//        /*Gestion des actions*/
+//        holder.itemView.setOnClickListener(v -> { // Gérer le clic sur l'item complet
+//            if (listener != null) {
+//                listener.onSongClick(currentSong, holder.getAdapterPosition());
+//            }
+//        });
+//
+//
+//        // Note : assure-toi que l'ID dans SongViewHolder correspond bien au bouton du XML
+//        holder.buttonBurger.setOnClickListener(v -> { // Gérer le clic sur le bouton burger
+//            if (listener != null) {
+//                // On passe la 'view' (le bouton) pour pouvoir ancrer un menu popup dessus plus tard
+//                listener.onMoreButtonClick(currentSong, holder.getAdapterPosition(), v);
+//            }
+//        });
     }
 
     @Override

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--Couleurs universels-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="redWarning">#33FF0000</color>
     <color name="transparent">#00000000</color>
+
+    <!--Theme Sombre-->
+    <color name="dark_background">#2E156B</color>
+    <color name="dark_elements">#9636A9</color>
+    <color name="dark_contrast">#DEC954</color>
+
+    <!--Theme Clair-->
+    <color name="light_background">#F5AE5C</color>
+    <color name="light_elements">#FFFFFF</color>
+    <color name="light_contrast">#F5AE5C</color>
 </resources>

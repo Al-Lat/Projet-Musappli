@@ -13,7 +13,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:background="?attr/colorPrimary"
+
+
+        >
 
         <ImageView
             android:id="@+id/imageView"
@@ -31,7 +35,9 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="8dp"
+            android:background="?attr/colorPrimary"
+            >
 
             <TextView
                 android:id="@+id/textViewTitle"
@@ -39,21 +45,28 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="Song Title" />
+                android:text="Song Title"
+                android:textColor="?attr/textFillColor"
+                android:background="?attr/colorPrimary"
+                />
 
             <TextView
                 android:id="@+id/textViewDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Ajouté le: 01/01/2023"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="?attr/textFillColor"
+                android:background="?attr/colorPrimary"
+                />
 
             <TextView
                 android:id="@+id/textViewExtension"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Extension: mp3"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="?attr/textFillColor"
+                android:background="?attr/colorPrimary"
+                />
 
         </LinearLayout>
 

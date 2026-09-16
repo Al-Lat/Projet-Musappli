@@ -1,8 +1,13 @@
 package com.example.projetmuseappli;
 
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,13 +22,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.projetmuseappli.fileManagment.LocalStorageImportManager;
 import com.example.projetmuseappli.fileManagment.Masterlist;
 import com.example.projetmuseappli.fileManagment.Song;
-import com.example.projetmuseappli.fileManagment.Utilitaries;
 import com.example.projetmuseappli.ui.SongAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.UUID;
+import java.util.List;
 
 /**
  * Activité principale de l'application gérant l'affichage de la liste des sons
@@ -32,8 +36,10 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     private SongAdapter songAdapter;
+
     private ActivityResultLauncher<String[]> filePickerLauncher;
     private boolean isDeleteMode = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,25 +60,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Initialisation des composants de l'interface
-        setupRecyclerView();
-        setupFilePicker();
-        setupFloatingButton();
+        if(!Masterlist.getInstance().isEmpty()){
+            setupRecyclerView();
+        } else {
+            setupTextView(); //afficher le message no_songs_found
+        }
+        setupImportFilePicker();
+        setupImportButton();
     }
 
-    /**
+    private void setupTextView() {
+        //retirer le recyclerview de la vue
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewSongs);
+        recyclerView.setVisibility(GONE);
+
+        //le remplacer par le textview prevu pour
+        TextView textView = findViewById(R.id.main_textView_noSongs);
+        textView.setVisibility(VISIBLE);
+    }
+
+    /*
      * Configure la liste (RecyclerView) pour l'affichage des sons.
      */
     private void setupRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recyclerViewSongs);
+
+        //Cacher le textview si il etait visible
+        TextView textView = findViewById(R.id.main_textView_noSongs);
+        if(textView.getVisibility() == VISIBLE){
+            textView.setVisibility(GONE);
+            recyclerView.setVisibility(VISIBLE);
+        }
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         
         // Création de l'adapter avec les données de la Masterlist
         songAdapter = new SongAdapter(Masterlist.getInstance().getMasterlistList());
         
-        // Définition de l'action lors d'un clic sur un élément de la liste
-        songAdapter.setOnSongClickListener((song, position)->{
-                    Toast.makeText(this, "Test de clic genéral", Toast.LENGTH_SHORT).show();
-                });
+        // Définition de l'action lors d'un clic sur un élément de la liste TODO FIX
+//        songAdapter.setOnSongClickListener((song, position)->{
+//                    Toast.makeText(this, "Test de clic genéral", Toast.LENGTH_SHORT).show();
+//                });
 
         
         recyclerView.setAdapter(songAdapter);
@@ -81,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Configure le lanceur pour l'ouverture de l'explorateur de fichiers.
      */
-    private void setupFilePicker() {
+    private void setupImportFilePicker() {
         filePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.OpenDocument(),
-                uri -> {
-                    if (uri != null) {
-                        importSong(uri);
+                new ActivityResultContracts.OpenMultipleDocuments(),
+                uriCollection -> {
+                    if (uriCollection != null) {
+                        importSong(uriCollection);
                     }
                 }
         );
@@ -95,18 +124,19 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Configure le bouton flottant (FAB) et son menu contextuel.
      */
-    private void setupFloatingButton() {
-        FloatingActionButton fab = findViewById(R.id.fabImport);
-        fab.setOnClickListener(v -> {
+    private void setupImportButton() {
+        ImageButton button = findViewById(R.id.importButton);
+        button.setOnClickListener(v -> {
             // Création d'un menu popup ancré sur le bouton
+            //ContextThemeWrapper wrapper = new ContextThemeWrapper(this, R.style.PopupMenuTheme); /*Redefini les couleurs*/
             PopupMenu popup = new PopupMenu(this, v);
             popup.getMenuInflater().inflate(R.menu.context_menu_global, popup.getMenu());
             
             popup.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_import) {
-                    // Lance le sélecteur de documents avec filtre sur les fichiers audio supportés TODO rendre le filtre dynamique
-                    filePickerLauncher.launch(new String[]{"audio/mpeg", "audio/x-flac", "audio/ogg", "application/ogg"});
+                    // Lance le sélecteur de documents avec filtre sur les fichiers audio supportés
+                    filePickerLauncher.launch(Masterlist.ACCEPTED_FORMATS);
                     return true;
                 } else if (itemId == R.id.action_new_playlist) {
                     Toast.makeText(this, R.string.FEATURE_TODO, Toast.LENGTH_SHORT).show(); //TODO ajouter la gestion d'autre playlist
@@ -160,31 +190,34 @@ public class MainActivity extends AppCompatActivity {
      * Gère l'importation d'un son à partir de son URI.
      * Extrait le nom du fichier pour définir le titre et vérifie l'extension.
      */
-    private void importSong(Uri uri) {
-        String fileName = Utilitaries.getFileNameFromUri(this, uri);
-        if (fileName != null) {
-            String extension = "";
-            String title = fileName;
+    private void importSong(List<Uri> uriCollection) {
 
-            // Séparation du nom et de l'extension
-            int lastDot = fileName.lastIndexOf('.');
-            if (lastDot > 0) {
-                extension = fileName.substring(lastDot + 1).toLowerCase();
-                title = fileName.substring(0, lastDot);
+
+        try {
+            //initialiser l'adapteur si il est vide
+            if(songAdapter == null){
+                setupRecyclerView();
             }
 
-            try {
-                // Création et ajout du nouvel objet Song
-                Song newSong = new Song(UUID.randomUUID(), extension, title);
-                Masterlist.getInstance().addSong(newSong);
-                
+            for (Uri uri: uriCollection) {
+                // Appel a la methode d'import
+                LocalStorageImportManager.importAudioFile(this,uri);
                 // Notification de l'adapter pour l'insertion visuelle
                 songAdapter.notifyItemInserted(Masterlist.getInstance().getMasterlistList().size() - 1);
-                Toast.makeText(this, "Importé : " + title, Toast.LENGTH_SHORT).show();
-            } catch (IllegalArgumentException e) {
-                // Gestion de l'erreur si l'extension n'est pas supportée
-                Toast.makeText(this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
+
+            Toast.makeText(this, "Importé avec succes ", Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+
+            /*Si la liste est vide (echec premier import) alors
+            remplacer le recyclerView par le textView*/
+            if(Masterlist.getInstance().isEmpty()){
+                setupTextView();
+            }
+
+            // Gestion de l'erreur si l'extension n'est pas supportée
+            Toast.makeText(this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+
     }
 }

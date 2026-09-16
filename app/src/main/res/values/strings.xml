@@ -1,7 +1,11 @@
 <resources>
     <!--Global / racine-->
     <string name="app_name">Projet Museappli</string>
-    <string name="master_playlist_name">Tout les morceaux</string>
+    <string name="menu_all_songs">Tout les morceaux</string>
+    <string name="menu_playlist">Playlists</string>
+    <string name="menu_history">Historique</string>
+    <string name="no_songs_found">Vous n\'avez aucun son</string>
+    <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
 
     <!--Menu contextuelle son-->
     <string name="delete_button_text">Supprimer</string>
@@ -17,12 +21,13 @@
     <!--ItemCard (item pour chaque son)-->
     <string name="item_card_date_format">Ajouté le: %s</string>
     <string name="item_card_extension_format">Extension: %s</string>
-    <string name="action_delete_song">action_delete_song</string>
+
 
     <!--Menus Contextuelles-->
     <string name="import_song">Importer un son</string>
     <string name="create_new_playlist">Créer une nouvelle playlist</string>
     <string name="add_to_playlist">Ajouter à une playlist</string>
+    <string name="delete_song">Supprimer ce morceau</string>
 
     <!-- Autres-->
     <string name="FEATURE_TODO">TODO : Ajouter à une playlist</string>

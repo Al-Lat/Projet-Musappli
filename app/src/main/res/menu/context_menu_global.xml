@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_import"
-        android:title="@string/import_song" />
+        android:title="@string/import_song"
+        />
     <item
         android:id="@+id/action_new_playlist"
         android:title="@string/create_new_playlist" />
