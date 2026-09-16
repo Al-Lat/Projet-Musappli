@@ -164,6 +164,10 @@ public class Masterlist implements Serializable {
         return false;
     }
 
+    public boolean removeSong(Song song){
+        return removeSong(song.getUUID());
+    }
+
     /*Gestion des playlist*/
     public void addPlaylist(Playlist playlist){
         allPlaylistList.add(playlist);

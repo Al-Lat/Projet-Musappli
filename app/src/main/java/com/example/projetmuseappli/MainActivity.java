@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         
         // Création de l'adapter avec les données de la Masterlist
-        songAdapter = new SongAdapter(Masterlist.getInstance().getMasterlistList());
+        songAdapter = new SongAdapter(this,Masterlist.getInstance().getMasterlistList());
         
         // Définition de l'action lors d'un clic sur un élément de la liste TODO FIX
 //        songAdapter.setOnSongClickListener((song, position)->{

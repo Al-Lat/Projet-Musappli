@@ -29,4 +29,7 @@ class SongViewHolder extends RecyclerView.ViewHolder {
         textViewExtension = itemView.findViewById(R.id.textViewExtension);
         buttonBurger = itemView.findViewById(R.id.buttonBurger);
     }
+
+
+
 }
