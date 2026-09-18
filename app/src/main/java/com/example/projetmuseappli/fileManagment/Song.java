@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Song implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2414591651L;
     /*Identifiant unique du fichier son*/
     private UUID UUID;
     private String Extension;

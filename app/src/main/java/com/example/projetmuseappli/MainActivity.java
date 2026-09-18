@@ -4,8 +4,13 @@ package com.example.projetmuseappli;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +29,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.fileManagment.LocalStorageImportManager;
 import com.example.projetmuseappli.fileManagment.Masterlist;
+import com.example.projetmuseappli.fileManagment.Playlist;
 import com.example.projetmuseappli.fileManagment.Song;
+import com.example.projetmuseappli.ui.PlaylistMenuChain;
+import com.example.projetmuseappli.ui.PlaylistPreviewAdapter;
 import com.example.projetmuseappli.ui.SongAdapter;
+import com.example.projetmuseappli.ui.SongViewHolder;
 
 import java.util.List;
 
@@ -44,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Initialisation de la Masterlist (chargement des données persistées)
         Masterlist.init(this);
 
         // Gestion de l'affichage bord à bord (Edge-to-Edge)
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        
+
         // Ajustement des marges en fonction des barres système (status bar, navigation bar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -60,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Initialisation des composants de l'interface
-        if(!Masterlist.getInstance().isEmpty()){
+        if (!Masterlist.getInstance().isEmpty()) {
             setupRecyclerView();
         } else {
             setupTextView(); //afficher le message no_songs_found
@@ -87,23 +96,34 @@ public class MainActivity extends AppCompatActivity {
 
         //Cacher le textview si il etait visible
         TextView textView = findViewById(R.id.main_textView_noSongs);
-        if(textView.getVisibility() == VISIBLE){
+        if (textView.getVisibility() == VISIBLE) {
             textView.setVisibility(GONE);
             recyclerView.setVisibility(VISIBLE);
         }
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        
+
+
+
+
+
         // Création de l'adapter avec les données de la Masterlist
-        songAdapter = new SongAdapter(this,Masterlist.getInstance().getMasterlistList());
-        
+        songAdapter = new SongAdapter(this, Masterlist.getInstance().getMasterlistList(),
+                new SongAdapter.OnSongClickListener() {
+                    @Override
+                    public void onBurgerClick(View view, SongViewHolder holder, Song currentSong) {
+                        showSongPopup(view,holder,currentSong);
+                    }
+                }
+        );
+
         // Définition de l'action lors d'un clic sur un élément de la liste TODO FIX
 //        songAdapter.setOnSongClickListener((song, position)->{
 //                    Toast.makeText(this, "Test de clic genéral", Toast.LENGTH_SHORT).show();
 //                });
 
-        
+
         recyclerView.setAdapter(songAdapter);
     }
 
@@ -126,27 +146,26 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setupImportButton() {
         ImageButton button = findViewById(R.id.importButton);
-        button.setOnClickListener(v -> {
-            // Création d'un menu popup ancré sur le bouton
-            //ContextThemeWrapper wrapper = new ContextThemeWrapper(this, R.style.PopupMenuTheme); /*Redefini les couleurs*/
-            PopupMenu popup = new PopupMenu(this, v);
-            popup.getMenuInflater().inflate(R.menu.context_menu_global, popup.getMenu());
-            
-            popup.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.action_import) {
-                    // Lance le sélecteur de documents avec filtre sur les fichiers audio supportés
-                    filePickerLauncher.launch(Masterlist.ACCEPTED_FORMATS);
-                    return true;
-                } else if (itemId == R.id.action_new_playlist) {
-                    Toast.makeText(this, R.string.FEATURE_TODO, Toast.LENGTH_SHORT).show(); //TODO ajouter la gestion d'autre playlist
-                }
-                return false;
-            });
-            popup.show();
-        });
+        // Création d'un menu popup ancré sur le bouton
+        button.setOnClickListener(this::summonGeneralPopup);
     }
 
+    private void summonGeneralPopup(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        popup.getMenuInflater().inflate(R.menu.context_menu_global, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_import) {
+                // Lance le sélecteur de documents avec filtre sur les fichiers audio supportés
+                filePickerLauncher.launch(Masterlist.ACCEPTED_FORMATS);
+                return true;
+            } else if (itemId == R.id.action_new_playlist) {
+                Toast.makeText(this, R.string.FEATURE_TODO, Toast.LENGTH_SHORT).show(); //TODO ajouter la gestion d'autre playlist
+            }
+            return false;
+        });
+        popup.show();
+    }
 
 
 //    /**
@@ -164,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
      * Affiche une boîte de dialogue pour confirmer la suppression d'un son.
      */
     private void showDeleteConfirmation(Song song, int position) {
-
-
         new AlertDialog.Builder(this)
                 .setTitle("Confirmation")
                 .setMessage("Voulez-vous vraiment supprimer \"" + song.getTitre() + "\" ?")
@@ -173,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     deleteSong(song, position);
                     //toggleDeleteMode(); // Désactivation du mode suppression après action
                 });
-                //.setNegativeButton("Non", (dialog, which) -> toggleDeleteMode()).show();
+        //.setNegativeButton("Non", (dialog, which) -> toggleDeleteMode()).show();
     }
 
     /**
@@ -195,13 +212,13 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             //initialiser l'adapteur si il est vide
-            if(songAdapter == null){
+            if (songAdapter == null) {
                 setupRecyclerView();
             }
 
-            for (Uri uri: uriCollection) {
+            for (Uri uri : uriCollection) {
                 // Appel a la methode d'import
-                LocalStorageImportManager.importAudioFile(this,uri);
+                LocalStorageImportManager.importAudioFile(this, uri);
                 // Notification de l'adapter pour l'insertion visuelle
                 songAdapter.notifyItemInserted(Masterlist.getInstance().getMasterlistList().size() - 1);
             }
@@ -211,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
             /*Si la liste est vide (echec premier import) alors
             remplacer le recyclerView par le textView*/
-            if(Masterlist.getInstance().isEmpty()){
+            if (Masterlist.getInstance().isEmpty()) {
                 setupTextView();
             }
 
@@ -220,4 +237,39 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    private void showSongPopup(View view, SongViewHolder holder, Song currentSong){
+        PopupMenu pop = new PopupMenu(this,view);
+        pop.getMenuInflater().inflate(R.menu.context_menu_song, pop.getMenu());
+        pop.setOnMenuItemClickListener((menuItem) -> {
+            int itemId = menuItem.getItemId();
+
+            int currentPosition = holder.getBindingAdapterPosition();
+            if (currentPosition == RecyclerView.NO_POSITION) {
+                return false; // sécurité : le holder n'est plus attaché à un item valide
+            }
+
+            if (itemId == R.id.action_delete_song) {
+
+                /*suppression reel*/
+                Masterlist.getInstance().removeSong(currentSong);
+
+                /*actualisation de la vue*/
+                holder.getBindingAdapter().notifyItemRemoved(currentPosition);
+                holder.getBindingAdapter().notifyItemRangeChanged(currentPosition, Masterlist.getInstance().getMasterlistList().size() - currentPosition);
+
+                return true;
+            } else if (itemId == R.id.action_add_to_playlist) {
+                /*Debuter la logique d'ajout a une playlist*/
+                new PlaylistMenuChain(this).beginAddToPlaylistChain(currentSong);
+
+            }
+            return false;
+        });
+        pop.show();
+    }
+
+
+
+
 }

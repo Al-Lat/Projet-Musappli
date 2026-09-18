@@ -9,6 +9,8 @@
         <item name="android:text">@color/black</item>
         <item name="colorAccent">@color/light_contrast</item>
 
+        <item name="textInputFilledStyle">@color/white</item>
+
         <item name="android:itemBackground">@color/light_elements</item>
         <item name="android:itemTextAppearance">@color/black</item>
 

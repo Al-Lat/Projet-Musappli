@@ -1,6 +1,8 @@
 package com.example.projetmuseappli.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.location.GnssAntennaInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +22,29 @@ import java.util.List;
  */
 public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
 
+//    /*Interface definisant un listener regroupant les methodes a donner à l'adaptateur afin de gérer les clics user*/
+    public interface OnSongClickListener {
+        /**
+         * Evenement de gestion du clic sur le viewHolder d'un morceau
+         */
+        //void onItemClick(Playlist playlist, int position);
+        /**
+         * Evenement de gestion du clic sur le bouton burger du viewHolder d'un morceau
+         */
+        void onBurgerClick(View view,SongViewHolder holder, Song currentSong);
+    }
+
 
     /*Liste des sons à afficher*/
     private List<Song> songList;
     private Context appContext;
+    private OnSongClickListener listener;
 
 
-    public SongAdapter(Context appContext, List<Song> songList) {
+    public SongAdapter(Context appContext, List<Song> songList, OnSongClickListener listener) {
         this.appContext = appContext;
         this.songList = songList;
+        this.listener = listener;
     }
 
 
@@ -48,11 +64,16 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
         holder.textViewTitle.setText(currentSong.getTitre());
 
         holder.textViewExtension.setText(
-                String.format(holder.textViewExtension.getContext().getString(
-                        R.string.item_card_extension_format), currentSong.getExtension()
-        ));
+                String.format(appContext.getString(R.string.item_card_extension_format)
+                        , currentSong.getExtension())
+        );
 
-//        /*Gestion des actions*/
+        holder.textViewDate.setText(
+                String.format(appContext.getString(R.string.item_card_date_format)
+                        , currentSong.getDateImport())
+        );
+
+        /*Gestion des actions*/
 //        holder.itemView.setOnClickListener(v -> { // TODO : Gérer le clic sur l'item complet
 //            if (listener != null) {
 //                listener.onSongClick(currentSong, holder.getAdapterPosition());
@@ -61,35 +82,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
 //
 //
 
-        holder.buttonBurger.setOnClickListener(v -> { // Gérer le clic sur le bouton burger
-            PopupMenu pop = new PopupMenu(this.appContext,v);
-            pop.getMenuInflater().inflate(R.menu.context_menu_song, pop.getMenu());
-
-            pop.setOnMenuItemClickListener((menuItem) -> {
-                int itemId = menuItem.getItemId();
-
-                int currentPosition = holder.getBindingAdapterPosition();
-                if (currentPosition == RecyclerView.NO_POSITION) {
-                    return false; // sécurité : le holder n'est plus attaché à un item valide
-                }
-
-                if (itemId == R.id.action_delete_song) {
-
-                    /*suppression reel*/
-                    Masterlist.getInstance().removeSong(currentSong);
-
-                    /*actualisation de la vue*/
-                    notifyItemRemoved(currentPosition);
-                    notifyItemRangeChanged(currentPosition, songList.size() - currentPosition);
-
-                    return true;
-                } else if (itemId == R.id.action_add_to_playlist) {
-                    Toast.makeText(this.appContext, R.string.FEATURE_TODO, Toast.LENGTH_SHORT).show(); //TODO ajouter la gestion d'autre playlist
-                }
-                return false;
-            });
-
-            pop.show();
+        holder.buttonBurger.setOnClickListener(view -> { // Gérer le clic sur le bouton burger
+            this.listener.onBurgerClick(view,holder,currentSong);
         });
     }
 
@@ -97,4 +91,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
     public int getItemCount() {
         return songList != null ? songList.size() : 0; //indique au RecyclerView combien d'éléments il doit afficher
     }
+
+
+
+
+
+
+
+
 }

@@ -13,9 +13,10 @@ import com.example.projetmuseappli.R;
  * Le pattern ViewHolder permet d'éviter de faire des findViewById() à répétition
  * pendant le défilement de la liste, améliorant ainsi les performances.
  */
-class SongViewHolder extends RecyclerView.ViewHolder {
+public class SongViewHolder extends RecyclerView.ViewHolder {
     TextView textViewTitle;
     TextView textViewExtension;
+    TextView textViewDate;
     View buttonBurger;
 
     /**
@@ -27,6 +28,7 @@ class SongViewHolder extends RecyclerView.ViewHolder {
         // Liaison des éléments graphiques du layout item_song.xml par leur ID
         textViewTitle = itemView.findViewById(R.id.textViewTitle);
         textViewExtension = itemView.findViewById(R.id.textViewExtension);
+        textViewDate = itemView.findViewById(R.id.textViewDate);
         buttonBurger = itemView.findViewById(R.id.buttonBurger);
     }
 

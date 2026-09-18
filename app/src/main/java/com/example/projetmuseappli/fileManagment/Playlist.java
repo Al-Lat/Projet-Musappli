@@ -21,32 +21,37 @@ package com.example.projetmuseappli.fileManagment;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Playlist implements Serializable {
 
     private LinkedList<Song> playlist;
-    private String nom;
-    private static final long serialVersionUID = 1L;
+    private String name;
+    public final static int NAME_MAX_LENGTH = 40;
 
-    public Playlist(String nom, Song song){
-        if(nom.isEmpty()){
+    private LocalDate date;
+    private static final long serialVersionUID = 185449732L;
+
+    public Playlist(@NonNull String name, Song song){
+        if(name.isEmpty()){
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
-        this.nom = nom;
+        this.name = name;
         this.playlist = new LinkedList<>();
         this.playlist.add(song);
+        this.date = LocalDate.now();
 
     }
 
-    public Playlist(String nom, List<Song> list){
-        if(nom.isEmpty()){
+    public Playlist(String name, List<Song> list){
+        if(name.isEmpty()){
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
-        this.nom = nom;
+        this.name = name;
         this.playlist = new LinkedList<>(list);
+        this.date = LocalDate.now();
 
     }
 
@@ -71,15 +76,21 @@ public class Playlist implements Serializable {
         this.playlist.remove(song);
     }
 
-    public LinkedList<Song> getPlaylist() {
+    public LinkedList<Song> getSongList() {
         return playlist;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(@NonNull String nom) {
-        this.nom = nom;
+    public int getSize(){return this.playlist.size();}
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 }

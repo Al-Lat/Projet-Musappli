@@ -7,20 +7,27 @@
     <string name="no_songs_found">Vous n\'avez aucun son</string>
     <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
 
+    <string name="confirm">Valider</string>
+    <string name="cancel">Annuler</string>
+
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+
     <!--Menu contextuelle son-->
     <string name="delete_button_text">Supprimer</string>
     <string name="delete_confirmation_title">Confirmation de suppression</string>
     <string name="delete_confirmation_message">Voulez-vous vraiment supprimer cet élément ?</string>
-    <string name="delete_confirmation_positive_button">Oui</string>
-    <string name="delete_confirmation_negative_button">Non</string>
+
 
     <!--Importation d'un son-->
     <string name="import_title">Importer un son</string>
     <string name="import_button_text">Importer</string>
 
-    <!--ItemCard (item pour chaque son)-->
-    <string name="item_card_date_format">Ajouté le: %s</string>
-    <string name="item_card_extension_format">Extension: %s</string>
+    <!--ItemCard (item pour chaque son/playlist)-->
+    <string name="item_card_date_format">Ajouté le : %s</string>
+    <string name="item_card_date_creation_format">Crée le : %s</string>
+    <string name="item_card_extension_format">Extension : %s</string>
+    <string name="item_card_playlist_size_format">Nombre de morceaux : %s</string>
 
 
     <!--Menus Contextuelles-->
@@ -29,7 +36,12 @@
     <string name="add_to_playlist">Ajouter à une playlist</string>
     <string name="delete_song">Supprimer ce morceau</string>
 
+    <!--Menus Dialog-->
+    <string name="ask_new_playlist_name">Quelle est le nom de la nouvelle playlist?</string>
+    <string name="ask_new_playlist_name_placeholder_text">Titre</string>
+
     <!-- Autres-->
     <string name="FEATURE_TODO">TODO : Ajouter à une playlist</string>
+    <string name="ERROR_MESSAGE_PREVIEW">Apercu d\'un message d\'erreur</string>
 
 </resources>
