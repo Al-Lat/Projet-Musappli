@@ -1,5 +1,6 @@
 package com.example.projetmuseappli.androidClasses.overlays;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,33 +18,44 @@ import com.example.projetmuseappli.elements.Song;
 import com.example.projetmuseappli.androidClasses.composant.adapters.PlaylistPreviewAdapter;
 
 /**
- * Facade permettant d'enchainer plusieurs vues
+ * Façade permettant d'enchaîner l'affichage des boîtes de dialogue pour la sélection et la création de playlists.
  */
 public class PlaylistMenuChain {
 
     private Context appContext;
     private Song songToAddToNewPlaylist;
+
+    /**
+     * Initialise la chaîne de menus avec le contexte applicatif.
+     *
+     * @param appContext Le contexte de l'application.
+     */
     public PlaylistMenuChain(Context appContext){
         this.appContext = appContext;
     }
 
+    /**
+     * Démarre la séquence permettant d'ajouter un morceau à une playlist existante ou d'en créer une nouvelle.
+     *
+     * @param currentSong Le morceau à ajouter.
+     */
     public void beginAddToPlaylistChain(Song currentSong){
         this.songToAddToNewPlaylist = currentSong;
         showPlaylistPreviewList();
     }
 
+    /**
+     * Démarre la séquence de création d'une nouvelle playlist.
+     */
     public void beginCreatePlaylistChain(){
         showPlaylistTitleInputDialog();
     }
-
-
-
 
     private void showPlaylistPreviewList(){
         View dialogView = LayoutInflater.from(appContext).inflate(R.layout.playlist_preview, null);
 
         /*instanciation du dialog*/
-        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(appContext)
+        AlertDialog dialog = new AlertDialog.Builder(appContext)
                 .setView(dialogView)
                 .create();
 
@@ -64,7 +76,6 @@ public class PlaylistMenuChain {
         recyclerView.setAdapter(new PlaylistPreviewAdapter(appContext
                 , Masterlist.getInstance().getMasterlistPlaylistList(),listener));
 
-
         /*definition des actions sur boutons*/
         Button btnCancel = dialogView.findViewById(R.id.buttonCancelAddToPlaylist);
         Button btnCreate = dialogView.findViewById(R.id.buttonCreateNewPlaylist);
@@ -78,11 +89,11 @@ public class PlaylistMenuChain {
             dialog.dismiss();
         });
 
-
         dialog.show();
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); /*fix des coins blancs*/
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
     }
-
 
     private void showPlaylistTitleInputDialog() {
 
@@ -94,7 +105,7 @@ public class PlaylistMenuChain {
         Button btnCancel  = dialogView.findViewById(R.id.buttonCancel);
         Button btnConfirm = dialogView.findViewById(R.id.buttonConfirm);
 
-        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(appContext)
+        AlertDialog dialog = new AlertDialog.Builder(appContext)
                 .setView(dialogView)
                 .create();
 
@@ -111,12 +122,13 @@ public class PlaylistMenuChain {
         btnCancel.setOnClickListener((view) -> dialog.dismiss());
 
         dialog.show();
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); /*fix des coins blancs*/
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
     }
 
-
     private boolean isPlaylistTitleInputValid(String input) {
-        if (input.isEmpty() || input.length() > Playlist.NAME_MAX_LENGTH) {
+        if (input == null || input.isEmpty() || input.length() > Playlist.NAME_MAX_LENGTH) {
             return false;
         }
 
@@ -124,8 +136,5 @@ public class PlaylistMenuChain {
         return true;
 
     }
-
-
-
 
 }

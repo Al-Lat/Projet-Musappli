@@ -10,20 +10,28 @@ import androidx.activity.result.ActivityResultCaller;
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.utilitaries.ImportHelper;
 
+/**
+ * Composant représentant le pied de page (footer) principal de l'application, gérant notamment le bouton d'importation.
+ */
 public class MainFooter {
 
+    /** Identifiant de ressource du layout du footer. */
     public static final int FOOTER_ID = R.layout.component_footer;
 
     private Activity activity;
     private ImportHelper importHelper;
 
+    /**
+     * Initialise le composant footer et configure les actions sur les éléments d'interface.
+     *
+     * @param activity L'activité hébergeant ce footer.
+     */
     public MainFooter(Activity activity){
         this.activity = activity;
         this.importHelper = new ImportHelper((ActivityResultCaller) activity);
 
         ImageButton boutonImport = activity.findViewById(R.id.importButton);
         boutonImport.setOnClickListener(view -> {
-            //summonGeneralPopup(activity,view,importHelper);
             importHelper.launch();
         });
     }
@@ -43,7 +51,5 @@ public class MainFooter {
         });
         popup.show();
     }
-
-
 
 }

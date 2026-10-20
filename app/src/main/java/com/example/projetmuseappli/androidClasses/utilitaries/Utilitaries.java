@@ -22,8 +22,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 
+/**
+ * Classe utilitaire proposant diverses fonctions d'aide pour la gestion des fichiers et des URI.
+ */
 public class Utilitaries {
 
+    /**
+     * Extrait et retourne le nom affichable d'un fichier à partir de son {@link Uri}.
+     *
+     * @param context Le contexte Android permettant d'effectuer la requête.
+     * @param uri L'{@link Uri} du fichier.
+     * @return Le nom du fichier sous forme de chaîne de caractères, ou {@code null} en cas d'échec.
+     */
     public static String getFileNameFromUri(Context context, Uri uri) {
         String result = null;
 
@@ -46,15 +56,15 @@ public class Utilitaries {
         // Cas de secours (Fallback) : Si l'URI est un ancien schéma "file://" (rare aujourd'hui)
         if (result == null) {
             result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
+            if (result != null) {
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
+                }
             }
         }
 
         return result;
     }
-
-
 
 }

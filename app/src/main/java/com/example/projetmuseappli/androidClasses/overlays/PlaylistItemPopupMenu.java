@@ -11,8 +11,18 @@ import com.example.projetmuseappli.androidClasses.composant.adapters.MediaRecycl
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 
+/**
+ * Classe utilitaire pour l'affichage du menu contextuel (Popup Menu) d'un item de playlist.
+ */
 public class PlaylistItemPopupMenu {
 
+    /**
+     * Affiche un menu contextuel pour un élément de playlist (ex: suppression, lecture).
+     *
+     * @param view La vue ancre pour l'affichage du menu.
+     * @param holder Le ViewHolder auquel est rattachée la playlist.
+     * @param currentPlaylist La playlist sélectionnée.
+     */
     public static void showPlaylistItemPopup(View view, RecyclerView.ViewHolder holder, Playlist currentPlaylist) {
 
         MediaRecyclerViewAdapterInterface adapterOfItem = (MediaRecyclerViewAdapterInterface) holder.getBindingAdapter();

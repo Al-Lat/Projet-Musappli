@@ -35,6 +35,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Classe singleton gérant la sauvegarde, la persistance et l'accès centralisé aux données
+ * de l'application (morceaux de musique et playlists).
+ */
 public class Masterlist implements Serializable {
     private static final long serialVersionUID = 165461L;
     private static final String FILE_NAME = "masterlist.ser";
@@ -59,22 +63,22 @@ public class Masterlist implements Serializable {
     }
 
     /**
-     * Tableau de Strings correspondant a chacun des formats de fichiers accepté par l'application.
-     * les formats ont leurs designations systeme android, par exemple flac est audio/x-flac
+     * Tableau de Strings correspondant à chacun des formats de fichiers acceptés par l'application.
+     * Les formats utilisent leurs désignations système Android, par exemple "audio/x-flac".
      */
     final public static String[] ACCEPTED_FORMATS = {"audio/mpeg", "audio/x-flac", "audio/ogg", "application/ogg"};
 
     private Masterlist(){
         masterlistSongHashMap = new HashMap<>();
         masterlistPlaylistHashMap = new HashMap<>();
-        //allSongPlaylist = new Playlist("All Songs", getMasterlistSongList());
     }
 
     /**
      * Initialise l'instance de Masterlist en tentant de la désérialiser depuis le stockage interne.
      * Si le fichier n'existe pas ou est corrompu, une nouvelle instance est créée.
-     * Si une instance non null existe deja alors rien n'est fait
-     * @param context Le contexte Android pour accéder aux fichiers
+     * Si une instance non null existe déjà, rien n'est fait.
+     *
+     * @param context Le contexte Android pour accéder au stockage interne.
      */
     public static void init(Context context) {
 
@@ -105,7 +109,9 @@ public class Masterlist implements Serializable {
 
     /**
      * Retourne l'instance unique de Masterlist.
-     * Note: init(Context) doit idéalement être appelé au moins une fois au démarrage.
+     * Note: {@link #init(Context)} doit idéalement être appelé au moins une fois au démarrage.
+     *
+     * @return L'instance unique de {@link Masterlist}.
      */
     public static Masterlist getInstance() {
         if (instance == null) {
@@ -119,7 +125,7 @@ public class Masterlist implements Serializable {
     }
 
     /**
-     * Sauvegarde l'état actuel de la Masterlist dans le stockage interne.
+     * Sauvegarde l'état actuel de la Masterlist dans le stockage interne de l'application.
      */
     public void save() {
         try (FileOutputStream fos = appContext.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
@@ -134,6 +140,8 @@ public class Masterlist implements Serializable {
      * Gère la désérialisation pour garantir l'unicité du Singleton.
      * Si une instance existe déjà, on retourne celle-ci.
      * Sinon, on définit l'instance actuelle comme étant celle désérialisée.
+     *
+     * @return L'instance unique de {@link Masterlist}.
      */
     protected Object readResolve() {
         synchronized (Masterlist.class) {
@@ -144,11 +152,20 @@ public class Masterlist implements Serializable {
         return instance;
     }
 
-    /*Gestion des listeners*/
+    /**
+     * Enregistre un écouteur de modifications sur la Masterlist.
+     *
+     * @param listener L'écouteur à ajouter.
+     */
     public void addListener(MasterlistListener listener) {
         getListeners().add(listener);
     }
 
+    /**
+     * Supprime un écouteur de modifications de la Masterlist.
+     *
+     * @param listener L'écouteur à retirer.
+     */
     public void removeListener(MasterlistListener listener) {
         getListeners().remove(listener);
     }
@@ -159,64 +176,115 @@ public class Masterlist implements Serializable {
         }
     }
 
-
-
-    /*Gestion de tout les sons*/
+    /**
+     * Retourne l'ensemble des morceaux de musique enregistrés.
+     *
+     * @return Une {@link LinkedList} contenant tous les objets {@link Song}.
+     */
     public LinkedList<Song> getMasterlistSongList() {
         return new LinkedList<>(masterlistSongHashMap.values());
     }
 
-    /*Gestion des sons*/
+    /**
+     * Ajoute un nouveau morceau de musique à la Masterlist et enregistre les modifications.
+     *
+     * @param song Le morceau {@link Song} à ajouter.
+     */
     public void addSong(@NonNull Song song){
         masterlistSongHashMap.put(song.getUUID(), song);
         this.save();
         this.notifyListeners();
     }
 
+    /**
+     * Récupère un morceau par son identifiant unique UUID.
+     *
+     * @param uuid L'identifiant {@link UUID} du morceau recherché.
+     * @return Le morceau {@link Song} correspondant, ou {@code null} si non trouvé.
+     */
     public Song getSong(@NonNull UUID uuid){
         return masterlistSongHashMap.get(uuid);
     }
 
+    /**
+     * Supprime un morceau de la Masterlist en utilisant son identifiant UUID.
+     *
+     * @param uuid L'identifiant {@link UUID} du morceau à supprimer.
+     */
     public void removeSong(@NonNull UUID uuid){
-        //this.allSongPlaylist.removeSong(masterlistSongHashMap.get(uuid));
         masterlistSongHashMap.remove(uuid);
         this.save();
         this.notifyListeners();
     }
 
+    /**
+     * Supprime un morceau de la Masterlist.
+     *
+     * @param song Le morceau {@link Song} à supprimer.
+     */
     public void removeSong(@NonNull Song song){
         removeSong(song.getUUID());
     }
 
-
-
-    /*Gestion des playlist*/
+    /**
+     * Ajoute une nouvelle playlist à la Masterlist et sauvegarde l'état.
+     *
+     * @param playlist La {@link Playlist} à ajouter.
+     */
     public void addPlaylist(@NonNull Playlist playlist){
         masterlistPlaylistHashMap.put(playlist.getUuid(),playlist);
         this.notifyListeners();
         save();
     }
+
+    /**
+     * Récupère une playlist par son identifiant unique UUID.
+     *
+     * @param uuid L'identifiant {@link UUID} de la playlist.
+     * @return La {@link Playlist} correspondante, ou {@code null} si non trouvée.
+     */
     public Playlist getPlaylist(@NonNull UUID uuid){
         return masterlistPlaylistHashMap.get(uuid);
     }
 
+    /**
+     * Supprime une playlist de la Masterlist.
+     *
+     * @param playlist La {@link Playlist} à supprimer.
+     */
     public void removePlaylist(@NonNull Playlist playlist){
         masterlistPlaylistHashMap.remove(playlist.getUuid());
         this.notifyListeners();
         save();
     }
 
+    /**
+     * Retire un morceau d'une playlist donnée et sauvegarde les modifications.
+     *
+     * @param song Le morceau {@link Song} à retirer.
+     * @param playlist La {@link Playlist} dont le morceau doit être supprimé.
+     */
     public void removeFromPlaylist(@NonNull Song song, @NonNull Playlist playlist){
         playlist.removeSong(song);
         this.notifyListeners();
         save();
     }
 
-
+    /**
+     * Retourne l'ensemble des playlists enregistrées.
+     *
+     * @return Une {@link LinkedList} contenant toutes les instances de {@link Playlist}.
+     */
     public LinkedList<Playlist> getMasterlistPlaylistList() {
         return new LinkedList<>(masterlistPlaylistHashMap.values());
     }
 
+    /**
+     * Récupère l'élément (Song ou Playlist) correspondant à l'identifiant UUID fourni.
+     *
+     * @param uuid L'identifiant {@link UUID} de l'élément recherché.
+     * @return L'objet {@link Playlist} ou {@link Song} correspondant, ou {@code null} si introuvable.
+     */
     public Object getRawObject(@NonNull UUID uuid){
         if (masterlistPlaylistHashMap.containsKey(uuid)) {
             return masterlistPlaylistHashMap.get(uuid);
@@ -226,13 +294,11 @@ public class Masterlist implements Serializable {
         return null;
     }
 
-
-
     /**
-     * Appelle "isEmpty" sur la hashmap interne de cette classe
-     * @throws IllegalStateException si l'instance est null
-     * @return  true si la liste est vide
-     *          false sinon
+     * Vérifie si la liste de morceaux est vide.
+     *
+     * @return {@code true} si la liste des morceaux est vide, {@code false} sinon.
+     * @throws IllegalStateException si l'instance de la Masterlist est null.
      */
     public boolean isEmpty(){
         if (this.instance == null){
@@ -251,6 +317,5 @@ public class Masterlist implements Serializable {
             this.masterlistPlaylistHashMap = new HashMap<>();
         }
     }
-
 
 }

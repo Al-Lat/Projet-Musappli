@@ -1,6 +1,5 @@
 package com.example.projetmuseappli.androidClasses.overlays;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.PopupMenu;
 
@@ -11,13 +10,21 @@ import com.example.projetmuseappli.androidClasses.composant.adapters.MediaRecycl
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 
+/**
+ * Classe utilitaire pour l'affichage du menu contextuel (Popup Menu) associé à un morceau de musique.
+ */
 public class SongItemPopupMenu {
 
-
+    /**
+     * Affiche le menu contextuel d'options pour un morceau de musique sélectionné (ex: suppression, ajout à une playlist).
+     *
+     * @param view La vue ancre.
+     * @param holder Le ViewHolder contenant le morceau.
+     * @param currentSong Le morceau sélectionné.
+     */
     public static void showSongItemPopup(View view, RecyclerView.ViewHolder holder, Song currentSong) {
 
         MediaRecyclerViewAdapterInterface adapterOfItem = (MediaRecyclerViewAdapterInterface) holder.getBindingAdapter();
-
 
         PopupMenu pop = new PopupMenu(adapterOfItem.getContext(),view);
         pop.getMenuInflater().inflate(R.menu.context_menu_song, pop.getMenu());

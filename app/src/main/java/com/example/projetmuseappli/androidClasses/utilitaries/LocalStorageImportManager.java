@@ -1,5 +1,5 @@
 /*
- * Classe chargé de l'import d'un fichier audio dans l'application
+ * Classe chargée de l'import d'un fichier audio dans l'application
  * Copyright (C) 2026  Alexandre Laouat
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,8 +30,20 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+/**
+ * Gestionnaire d'importation de fichiers audio depuis le stockage local de l'appareil vers le stockage interne privé de l'application.
+ */
 public class LocalStorageImportManager {
-    public static void importAudioFile(Context context,Uri uriFichier) throws RuntimeException {
+
+    /**
+     * Importe un fichier audio depuis son {@link Uri}, le copie dans le stockage privé de l'application et l'enregistre dans la {@link Masterlist}.
+     *
+     * @param context Le contexte d'exécution.
+     * @param uriFichier L'{@link Uri} du fichier audio à importer.
+     * @throws RuntimeException En cas d'erreur de copie ou d'accès au fichier.
+     * @throws IllegalArgumentException Si l'extension du fichier est invalide.
+     */
+    public static void importAudioFile(Context context, Uri uriFichier) throws RuntimeException {
 
         //Récupérer le nom du fichier
         String nomFichier = Utilitaries.getFileNameFromUri(context, uriFichier);
@@ -78,7 +90,5 @@ public class LocalStorageImportManager {
             inputStream.close();
         }
     }
-
-
 
 }

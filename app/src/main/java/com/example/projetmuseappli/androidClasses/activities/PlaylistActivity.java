@@ -19,6 +19,9 @@ import com.example.projetmuseappli.elements.Song;
 
 import java.util.UUID;
 
+/**
+ * Activité affichant le contenu détaillé d'une playlist sous forme de liste de morceaux.
+ */
 public class PlaylistActivity extends AppCompatActivity {
 
     private PlaylistHeader header;
@@ -29,6 +32,12 @@ public class PlaylistActivity extends AppCompatActivity {
     private SongAdapter adapter;
     private RecyclerView recyclerView;
 
+    /**
+     * Initialise l'activité, récupère la playlist passée en paramètre d'intent
+     * et configure le RecyclerView ainsi que le header et le footer.
+     *
+     * @param savedInstanceState État sauvegardé de l'activité, le cas échéant.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +55,6 @@ public class PlaylistActivity extends AppCompatActivity {
         adapter = getNewAdapter();
         adapter.setItems(Masterlist.getInstance().getPlaylist(uuidOfRefPlaylist).getSongList());
         recyclerView.setAdapter(adapter);
-
 
         this.header = new PlaylistHeader(this,uuidOfRefPlaylist, adapter);
         this.footer = new MainFooter(this);

@@ -13,6 +13,9 @@ import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.All
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.AllSongListViewFragmentStrategy;
 import com.example.projetmuseappli.elements.Masterlist;
 
+/**
+ * Activité principale de l'application gérant la navigation par onglets via {@link ViewPager2}.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private MainHeader header;
@@ -20,6 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 fragmentContainer;
 
+    /**
+     * Initialise la vue principale, charge la {@link Masterlist} et configure le {@link ViewPager2} avec son adapteur.
+     *
+     * @param savedInstanceState État sauvegardé de l'activité, le cas échéant.
+     */
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 
         Masterlist.init(this);

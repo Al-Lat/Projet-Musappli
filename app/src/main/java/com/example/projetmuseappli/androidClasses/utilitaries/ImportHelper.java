@@ -15,23 +15,26 @@ import com.example.projetmuseappli.elements.Masterlist;
 
 import java.util.List;
 
+/**
+ * Classe utilitaire gérant la sélection et le lancement de l'importation de fichiers audio via le sélecteur de documents Android.
+ */
 public class ImportHelper {
-
 
     private ActivityResultLauncher<String[]> launcher;
 
-
     /**
-     * Class encapsulant un filepicker de plusieurs documents.
-     * Cette classe doit etre instancie a la creation d'une classe activite
-     * @param caller classe Activity instanciant cette classe
+     * Encapsule un sélecteur de documents multiples.
+     * Doit être instanciée lors de la création de l'activité hôte.
+     *
+     * @param caller L'activité ou le composant initiant la demande.
      */
     public ImportHelper(@NonNull ActivityResultCaller caller) {
         this.launcher = caller.registerForActivityResult(
                 new ActivityResultContracts.OpenMultipleDocuments(),
                 uriList -> {
                     if (uriList != null && !uriList.isEmpty()) {
-                        if (caller instanceof Activity && !((Activity) caller).isFinishing()) { //TODO comprendre ce if
+                        /*passe l'import que si caller est une activity encore en cours*/
+                        if (caller instanceof Activity && !((Activity) caller).isFinishing()) {
                             importSong((Context) caller,uriList);
                         }
                     }
@@ -40,27 +43,26 @@ public class ImportHelper {
     }
 
     /**
-     * Appel le lanceur pour l'ouverture de l'explorateur de fichiers.
+     * Lance le sélecteur d'explorateur de fichiers filtré sur les formats audio supportés.
      */
     public void launch() {
         launcher.launch(Masterlist.ACCEPTED_FORMATS);
     }
 
-
     /**
-     * Gère l'importation d'un son à partir de son URI.
-     * Extrait le nom du fichier pour définir le titre et vérifie l'extension.
+     * Gère l'importation de morceaux à partir d'une liste d'URI.
+     *
+     * @param context Le contexte Android.
+     * @param uriCollection La liste des URI de fichiers audio à importer.
+     * @throws RuntimeException si une erreur survient pendant l'importation.
      */
     public static void importSong(@NonNull Context context, List<Uri> uriCollection) throws RuntimeException {
 
         for (Uri uri : uriCollection) {
-            // Appel a la methode d'import
             LocalStorageImportManager.importAudioFile(context, uri);
         }
 
         Toast.makeText(context, context.getString(R.string.import_succesful), Toast.LENGTH_SHORT).show();
     }
-
-
 
 }
