@@ -16,10 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.example.projetmuseappli.fileManagment;
+package com.example.projetmuseappli.elements;
 
 import android.content.Context;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,7 +31,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Masterlist implements Serializable {
     private static final long serialVersionUID = 165461L;
@@ -37,15 +42,21 @@ public class Masterlist implements Serializable {
     private static Context appContext;
 
     /*Collection des Song sous forme de hashmap pour la rapidité de recherche*/
-    private HashMap<UUID,Song> masterlistHashMap;
+    private HashMap<UUID,Song> masterlistSongHashMap;
 
-    /*Collection des Song sous forme de LinkedList pour la rapidité d'ordonencement*/
-    private LinkedList<Song> masterlistList;
-
-    /*Collection des Playlist sous forme de LinkedList pour la rapidité d'ordonencement*/
-    private LinkedList<Playlist> allPlaylistList;
+    /*Collection des Playlist sous forme de hashmap pour la rapidité de recherche*/
+    private HashMap<UUID,Playlist> masterlistPlaylistHashMap;
 
     private static volatile Masterlist instance;
+
+    private transient List<MasterlistListener> listeners;
+
+    private List<MasterlistListener> getListeners() {
+        if (listeners == null) {
+            listeners = new CopyOnWriteArrayList<>(); // safe si (dés)inscription pendant l'itération
+        }
+        return listeners;
+    }
 
     /**
      * Tableau de Strings correspondant a chacun des formats de fichiers accepté par l'application.
@@ -54,14 +65,15 @@ public class Masterlist implements Serializable {
     final public static String[] ACCEPTED_FORMATS = {"audio/mpeg", "audio/x-flac", "audio/ogg", "application/ogg"};
 
     private Masterlist(){
-        masterlistHashMap = new HashMap<>();
-        masterlistList = new LinkedList<>();
-        allPlaylistList = new LinkedList<>();
+        masterlistSongHashMap = new HashMap<>();
+        masterlistPlaylistHashMap = new HashMap<>();
+        //allSongPlaylist = new Playlist("All Songs", getMasterlistSongList());
     }
 
     /**
      * Initialise l'instance de Masterlist en tentant de la désérialiser depuis le stockage interne.
      * Si le fichier n'existe pas ou est corrompu, une nouvelle instance est créée.
+     * Si une instance non null existe deja alors rien n'est fait
      * @param context Le contexte Android pour accéder aux fichiers
      */
     public static void init(Context context) {
@@ -78,6 +90,7 @@ public class Masterlist implements Serializable {
                          ObjectInputStream ois = new ObjectInputStream(fis)) {
                         // readObject() appelle automatiquement readResolve() si elle est définie
                         instance = (Masterlist) ois.readObject();
+
                     } catch (Exception e) {
                         Log.i("Masterlist", "Aucune sauvegarde trouvée ou erreur " +
                                 "de lecture, création d'une nouvelle liste.");
@@ -86,6 +99,8 @@ public class Masterlist implements Serializable {
                 }
             }
         }
+        /*Convertion des null en empty*/
+        instance.fixNullLists();
     }
 
     /**
@@ -128,60 +143,90 @@ public class Masterlist implements Serializable {
         }
         return instance;
     }
-    /*Gestion de tout les sons*/
-    public LinkedList<Song> getMasterlistList() {
-        return masterlistList;
+
+    /*Gestion des listeners*/
+    public void addListener(MasterlistListener listener) {
+        getListeners().add(listener);
     }
-    public Playlist getMasterPlaylist(String nomPlaylist){
-        return new Playlist(nomPlaylist, masterlistList);
+
+    public void removeListener(MasterlistListener listener) {
+        getListeners().remove(listener);
+    }
+
+    private void notifyListeners() {
+        for (MasterlistListener listener : getListeners()) {
+            listener.onMasterlistChanged();
+        }
+    }
+
+
+
+    /*Gestion de tout les sons*/
+    public LinkedList<Song> getMasterlistSongList() {
+        return new LinkedList<>(masterlistSongHashMap.values());
     }
 
     /*Gestion des sons*/
-    public void addSong(Song song){
-        masterlistHashMap.put(song.getUUID(), song);
-        masterlistList.add(song);
+    public void addSong(@NonNull Song song){
+        masterlistSongHashMap.put(song.getUUID(), song);
         this.save();
-
+        this.notifyListeners();
     }
 
-    public Song getSong(UUID uuid){
-        return masterlistHashMap.get(uuid);
+    public Song getSong(@NonNull UUID uuid){
+        return masterlistSongHashMap.get(uuid);
     }
 
-    public Song getSong(int index){
-        return masterlistList.get(index);
+    public void removeSong(@NonNull UUID uuid){
+        //this.allSongPlaylist.removeSong(masterlistSongHashMap.get(uuid));
+        masterlistSongHashMap.remove(uuid);
+        this.save();
+        this.notifyListeners();
     }
 
-    public boolean removeSong(UUID uuid){
-        for(Song song : masterlistList){
-            if(song.getUUID().equals(uuid)){
-                masterlistList.remove(song);
-                masterlistHashMap.remove(uuid);
-                save();
-                return true;
-            }
-        }
-        return false;
+    public void removeSong(@NonNull Song song){
+        removeSong(song.getUUID());
     }
 
-    public boolean removeSong(Song song){
-        return removeSong(song.getUUID());
-    }
+
 
     /*Gestion des playlist*/
-    public void addPlaylist(Playlist playlist){
-        allPlaylistList.add(playlist);
+    public void addPlaylist(@NonNull Playlist playlist){
+        masterlistPlaylistHashMap.put(playlist.getUuid(),playlist);
+        this.notifyListeners();
+        save();
+    }
+    public Playlist getPlaylist(@NonNull UUID uuid){
+        return masterlistPlaylistHashMap.get(uuid);
+    }
+
+    public void removePlaylist(@NonNull Playlist playlist){
+        masterlistPlaylistHashMap.remove(playlist.getUuid());
+        this.notifyListeners();
         save();
     }
 
-    public void removePlaylist(Playlist playlist){
-        allPlaylistList.remove(playlist);
+    public void removeFromPlaylist(@NonNull Song song, @NonNull Playlist playlist){
+        playlist.removeSong(song);
+        this.notifyListeners();
         save();
     }
 
-    public LinkedList<Playlist> getAllPlaylistList() {
-        return allPlaylistList;
+
+    public LinkedList<Playlist> getMasterlistPlaylistList() {
+        return new LinkedList<>(masterlistPlaylistHashMap.values());
     }
+
+    public Object getRawObject(@NonNull UUID uuid){
+        if (masterlistPlaylistHashMap.containsKey(uuid)) {
+            return masterlistPlaylistHashMap.get(uuid);
+        } else if (masterlistSongHashMap.containsKey(uuid)) {
+            return masterlistSongHashMap.get(uuid);
+        }
+        return null;
+    }
+
+
 
     /**
      * Appelle "isEmpty" sur la hashmap interne de cette classe
@@ -194,7 +239,18 @@ public class Masterlist implements Serializable {
             throw new IllegalStateException("The Masterlist instance is null and cannot be tested");
         }
 
-        return masterlistHashMap.isEmpty();
+        return masterlistSongHashMap.isEmpty();
     }
+
+    /*convertit les listes/hashmaps attributs de la classe null en listes vides*/
+    private void fixNullLists(){
+        if (this.masterlistSongHashMap == null ){
+            this.masterlistSongHashMap = new HashMap<>();
+        }
+        if (this.masterlistPlaylistHashMap == null ){
+            this.masterlistPlaylistHashMap = new HashMap<>();
+        }
+    }
+
 
 }

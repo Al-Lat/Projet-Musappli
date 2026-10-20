@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/importButtonLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="15dp"
+    android:gravity="center">
+
+    <ImageButton
+        android:id="@+id/importButton"
+        android:layout_marginHorizontal="3dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_add"
+        android:background="@drawable/menu_add_button"
+        app:tint="?attr/textFillColor"
+        android:contentDescription="@string/import_button_text" />
+
+</LinearLayout>

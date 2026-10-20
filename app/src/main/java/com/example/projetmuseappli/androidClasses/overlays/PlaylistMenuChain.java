@@ -1,19 +1,20 @@
-package com.example.projetmuseappli.ui;
+package com.example.projetmuseappli.androidClasses.overlays;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
-import com.example.projetmuseappli.fileManagment.Masterlist;
-import com.example.projetmuseappli.fileManagment.Playlist;
-import com.example.projetmuseappli.fileManagment.Song;
+import com.example.projetmuseappli.elements.Masterlist;
+import com.example.projetmuseappli.elements.Playlist;
+import com.example.projetmuseappli.elements.Song;
+import com.example.projetmuseappli.androidClasses.composant.adapters.PlaylistPreviewAdapter;
 
 /**
  * Facade permettant d'enchainer plusieurs vues
@@ -21,54 +22,69 @@ import com.example.projetmuseappli.fileManagment.Song;
 public class PlaylistMenuChain {
 
     private Context appContext;
+    private Song songToAddToNewPlaylist;
     public PlaylistMenuChain(Context appContext){
         this.appContext = appContext;
     }
 
     public void beginAddToPlaylistChain(Song currentSong){
-        showPlaylistPreviewList(currentSong);
+        this.songToAddToNewPlaylist = currentSong;
+        showPlaylistPreviewList();
+    }
+
+    public void beginCreatePlaylistChain(){
+        showPlaylistTitleInputDialog();
     }
 
 
 
 
-    private void showPlaylistPreviewList(Song currentSong){
+    private void showPlaylistPreviewList(){
         View dialogView = LayoutInflater.from(appContext).inflate(R.layout.playlist_preview, null);
-        //dialogView.setBackgroundColor(appContext.getColor(R.color.transparent));
 
-
-        RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewPlaylists);
-        recyclerView.setLayoutManager(new LinearLayoutManager(appContext));
-        recyclerView.setAdapter(new PlaylistPreviewAdapter(appContext
-                , Masterlist.getInstance().getAllPlaylistList()));
-
-
-        Button btnCancel = dialogView.findViewById(R.id.buttonCancelAddToPlaylist);
-        Button btnCreate = dialogView.findViewById(R.id.buttonCreateNewPlaylist);
-
-
+        /*instanciation du dialog*/
         android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(appContext)
                 .setView(dialogView)
                 .create();
 
-        /*definition des actions*/
+        /*gestion des actions sur item*/
+        PlaylistPreviewAdapter.OnPlaylistPreviewClickListener listener = playlist -> {
+            try {
+                playlist.addSong(this.songToAddToNewPlaylist);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(appContext, appContext.getString(R.string.ERROR_MESSAGE_SONG_ALREADY_IN_PLAYLIST)
+                        , Toast.LENGTH_SHORT).show();
+            }
+            dialog.dismiss();
+        };
+
+        /*preparation de la vue*/
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewPlaylists);
+        recyclerView.setLayoutManager(new LinearLayoutManager(appContext));
+        recyclerView.setAdapter(new PlaylistPreviewAdapter(appContext
+                , Masterlist.getInstance().getMasterlistPlaylistList(),listener));
+
+
+        /*definition des actions sur boutons*/
+        Button btnCancel = dialogView.findViewById(R.id.buttonCancelAddToPlaylist);
+        Button btnCreate = dialogView.findViewById(R.id.buttonCreateNewPlaylist);
+
         btnCancel.setOnClickListener(view -> {
             dialog.dismiss();
         });
 
         btnCreate.setOnClickListener(view -> {
-            showPlaylistTitleInputDialog(currentSong);
+            showPlaylistTitleInputDialog();
             dialog.dismiss();
         });
 
-        //TODO géré click sur une playlist
 
         dialog.show();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); /*fix des coins blancs*/
     }
 
 
-    private void showPlaylistTitleInputDialog(Song songToAddToNewPlaylist) {
+    private void showPlaylistTitleInputDialog() {
 
         LayoutInflater inflater = LayoutInflater.from(appContext);
         View dialogView = inflater.inflate(R.layout.new_playlist_dialog, null);
@@ -88,7 +104,7 @@ public class PlaylistMenuChain {
             if(isPlaylistTitleInputValid(userInput)){
                 Masterlist.getInstance().addPlaylist(new Playlist(userInput,songToAddToNewPlaylist));
                 dialog.dismiss();
-            } //TODO geré input invalide
+            }
 
         });
 

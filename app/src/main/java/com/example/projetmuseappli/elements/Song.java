@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.example.projetmuseappli.fileManagment;
+package com.example.projetmuseappli.elements;
 
 import androidx.annotation.NonNull;
 
@@ -27,6 +27,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +39,9 @@ public class Song implements Serializable {
     private String Extension;
     private String titre;
     private LocalDate dateImport;
+
+
+
 
     private String FORMAT_DATE_DEFAUT = "dd/MM/yyyy";
 
@@ -51,7 +56,8 @@ public class Song implements Serializable {
         if(EXTENSIONS_VALIDES.contains(Extension)){
             this.Extension = Extension;
         } else {
-            String message = "L'extention du fichier : "+titre+"\nUUID : "+uuid+" est invalide. Extentions valide : "+getStringExtensionValides();
+            String message = "L'extention du fichier : "+titre+"\nUUID : "+uuid+" est invalide. " +
+                    "Extentions valide : "+getStringExtensionValides();
             throw new IllegalArgumentException(message);
         }
 
@@ -77,8 +83,16 @@ public class Song implements Serializable {
         return titre;
     }
 
-    public LocalDate getDateImport() {
+    public LocalDate getDate() {
         return dateImport;
+    }
+
+    /**
+     * Renvoie la date d'import sous forme de string formatee
+     * @return la string de la date formatee
+     */
+    public String getDateString(){
+        return getDateString(FORMAT_DATE_DEFAUT);
     }
 
     /**
@@ -86,7 +100,7 @@ public class Song implements Serializable {
      * @param format format de la date (cf DateTimeFormater), "dd/MM/yyyy" est le format par defaut
      * @return la string de la date formatee
      */
-    public String getDateImportString(String format){
+    public String getDateString(String format){
         if(format.isEmpty()){
             format=FORMAT_DATE_DEFAUT;
         }
@@ -133,6 +147,7 @@ public class Song implements Serializable {
         return sb.toString();
     }
 
+
     /**
      * Classe permetant de trier les objets Song par leur nom via Collection.sort()
      */
@@ -149,22 +164,8 @@ public class Song implements Serializable {
     public static class SongDateComparator implements Comparator<Song> {
         @Override
         public int compare(Song s1, Song s2) {
-            return s1.getDateImport().compareTo(s2.getDateImport());
+            return s1.getDate().compareTo(s2.getDate());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

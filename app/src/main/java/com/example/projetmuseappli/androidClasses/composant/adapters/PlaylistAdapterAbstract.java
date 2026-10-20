@@ -1,4 +1,4 @@
-package com.example.projetmuseappli.ui;
+package com.example.projetmuseappli.androidClasses.composant.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.projetmuseappli.fileManagment.Playlist;
+import com.example.projetmuseappli.elements.Playlist;
 
 import java.util.List;
 
-public abstract class PlaylistAdapterAbstract <PlaylistViewHolderConcreteType extends PlaylistAdapterAbstract.PlaylistViewHolderAbstract> extends RecyclerView.Adapter<PlaylistViewHolderConcreteType>{
+public abstract class PlaylistAdapterAbstract
+            <PlaylistViewHolderConcreteType extends PlaylistAdapterAbstract.PlaylistViewHolderAbstract>
+        extends RecyclerView.Adapter<PlaylistViewHolderConcreteType>
+        implements MediaRecyclerViewAdapterInterface<Playlist> {
 
     /*Liste des sons à afficher*/
     protected List<Playlist> playlistList;
@@ -47,5 +50,20 @@ public abstract class PlaylistAdapterAbstract <PlaylistViewHolderConcreteType ex
 
     }
 
+    @Override
+    public Context getContext(){
+        return this.appContext;
+    }
+
+    @Override
+    public List<Playlist> getListOfAdapter(){
+        return this.playlistList;
+    }
+
+    @Override
+    public void setItems(List<Playlist> newItems) {
+        this.playlistList = newItems;
+        notifyDataSetChanged();
+    }
 
 }

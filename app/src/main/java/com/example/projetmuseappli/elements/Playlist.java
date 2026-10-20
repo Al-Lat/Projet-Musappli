@@ -16,46 +16,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.example.projetmuseappli.fileManagment;
+package com.example.projetmuseappli.elements;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class Playlist implements Serializable {
 
-    private LinkedList<Song> playlist;
+    /*Identifiant unique du fichier playlist*/
+    private UUID uuid;
+
+    private List<Song> playlist;
     private String name;
     public final static int NAME_MAX_LENGTH = 40;
 
-    private LocalDate date;
+    private LocalDate dateCreation;
+
+
+
+
     private static final long serialVersionUID = 185449732L;
 
+    private static final String FORMAT_DATE_DEFAUT = "dd/MM/yyyy";
+
     public Playlist(@NonNull String name, Song song){
+        setUUID();
         if(name.isEmpty()){
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
         this.name = name;
         this.playlist = new LinkedList<>();
         this.playlist.add(song);
-        this.date = LocalDate.now();
+        this.dateCreation = LocalDate.now();
 
     }
 
     public Playlist(String name, List<Song> list){
+        setUUID();
         if(name.isEmpty()){
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
         this.name = name;
         this.playlist = new LinkedList<>(list);
-        this.date = LocalDate.now();
+        this.dateCreation = LocalDate.now();
 
     }
 
-    public void addSong(@NonNull Song song){
+    public void addSong(@NonNull Song song) throws IllegalArgumentException{
 
         if(this.playlist.contains(song)){
             throw new IllegalArgumentException("La playlist contient déjà ce son");
@@ -76,7 +91,7 @@ public class Playlist implements Serializable {
         this.playlist.remove(song);
     }
 
-    public LinkedList<Song> getSongList() {
+    public List<Song> getSongList() {
         return playlist;
     }
 
@@ -89,8 +104,37 @@ public class Playlist implements Serializable {
     public void setName(@NonNull String name) {
         this.name = name;
     }
+    public UUID getUuid() {return this.uuid;}
 
     public LocalDate getDate() {
-        return date;
+        return dateCreation;
     }
+
+
+    /**
+     * Renvoie la date de creation sous forme de string formatee
+     * @return la string de la date formatee
+     */
+    public String getDateString(){
+        return getDateString(FORMAT_DATE_DEFAUT);
+    }
+
+    /**
+     * Renvoie la date de creation sous forme de string formatee
+     * @param format format de la date (cf DateTimeFormater), "dd/MM/yyyy" est le format par defaut
+     * @return la string de la date formatee
+     */
+    public String getDateString(String format){
+        if(format.isEmpty()){
+            format=FORMAT_DATE_DEFAUT;
+        }
+        return this.dateCreation.format(DateTimeFormatter.ofPattern(format));
+    }
+
+
+    private void setUUID(){
+        this.uuid = UUID.randomUUID();
+    }
+
+
 }

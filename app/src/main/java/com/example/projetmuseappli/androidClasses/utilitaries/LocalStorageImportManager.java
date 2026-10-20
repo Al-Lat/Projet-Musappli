@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.projetmuseappli.fileManagment;
+package com.example.projetmuseappli.androidClasses.utilitaries;
 
 import android.content.Context;
 import android.net.Uri;
+
+import com.example.projetmuseappli.elements.Masterlist;
+import com.example.projetmuseappli.elements.Song;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +31,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class LocalStorageImportManager {
-    public static void importAudioFile(Context context,Uri uriFichier) {
+    public static void importAudioFile(Context context,Uri uriFichier) throws RuntimeException {
 
         //Récupérer le nom du fichier
         String nomFichier = Utilitaries.getFileNameFromUri(context, uriFichier);

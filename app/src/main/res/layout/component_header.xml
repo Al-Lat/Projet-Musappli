@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.tabs.TabLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/header_tab_layout"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:layout_marginVertical="0dp"
+    app:tabBackground="@color/transparent"
+    app:tabIndicatorColor="?attr/textFillColor"
+    app:tabTextColor="?attr/textFillColor"
+    app:tabMode="fixed">
+
+    <com.google.android.material.tabs.TabItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_all_songs"/>
+
+    <com.google.android.material.tabs.TabItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_playlist"/>
+
+    <com.google.android.material.tabs.TabItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_history"/>
+
+</com.google.android.material.tabs.TabLayout>

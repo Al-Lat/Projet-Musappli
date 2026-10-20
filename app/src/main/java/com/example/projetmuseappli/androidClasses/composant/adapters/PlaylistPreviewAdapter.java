@@ -1,4 +1,4 @@
-package com.example.projetmuseappli.ui;
+package com.example.projetmuseappli.androidClasses.composant.adapters;
 
 import android.content.Context;
 import android.view.View;
@@ -8,23 +8,34 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.projetmuseappli.R;
-import com.example.projetmuseappli.fileManagment.Playlist;
+import com.example.projetmuseappli.elements.Playlist;
 
 import java.util.List;
 
 public class PlaylistPreviewAdapter extends PlaylistAdapterAbstract<PlaylistPreviewAdapter.PlaylistPreviewViewHolder>{
 
-    public static final int ID_LAYOUT = R.layout.item_playlist_preview;
+    public interface OnPlaylistPreviewClickListener {
+        /**
+         * Evenement de gestion du clic sur le viewHolder d'une playlist
+         */
+        void onItemClick(Playlist playlist);
+
+    }
+
+    public static final int ITEM_LAYOUT_ID = R.layout.item_playlist_preview;
+
+    private OnPlaylistPreviewClickListener listener;
 
 
-    public PlaylistPreviewAdapter(Context appContext, List<Playlist> allPlaylist) {
+    public PlaylistPreviewAdapter(Context appContext, List<Playlist> allPlaylist,OnPlaylistPreviewClickListener listener) {
         super(appContext, allPlaylist);
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public PlaylistPreviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new PlaylistPreviewViewHolder(this.getInflatedItemView(parent, viewType,ID_LAYOUT));
+        return new PlaylistPreviewViewHolder(this.getInflatedItemView(parent, viewType, ITEM_LAYOUT_ID));
     }
 
     @Override
@@ -44,7 +55,9 @@ public class PlaylistPreviewAdapter extends PlaylistAdapterAbstract<PlaylistPrev
         holder.title.setText(currentPlaylist.getName());
 
         /*gestion des actions*/
-        //holder.itemView.setOnClickListener();
+        holder.itemView.setOnClickListener(view -> {
+            this.listener.onItemClick(currentPlaylist);
+        });
 
     }
 
@@ -61,7 +74,6 @@ public class PlaylistPreviewAdapter extends PlaylistAdapterAbstract<PlaylistPrev
          */
         public PlaylistPreviewViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Liaison des éléments graphiques du layout item_song.xml par leur ID
             title = itemView.findViewById(R.id.playlistPreviewTitle);
             size = itemView.findViewById(R.id.playlistPreviewSize);
             date = itemView.findViewById(R.id.playlistPreviewDate);

@@ -4,8 +4,10 @@
     <string name="menu_all_songs">Tout les morceaux</string>
     <string name="menu_playlist">Playlists</string>
     <string name="menu_history">Historique</string>
+    <string name="no_item_found">La liste n\'as aucun item</string>
     <string name="no_songs_found">Vous n\'avez aucun son</string>
     <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
+    <string name="import_succesful">Importé avec succes</string>
 
     <string name="confirm">Valider</string>
     <string name="cancel">Annuler</string>
@@ -29,19 +31,21 @@
     <string name="item_card_extension_format">Extension : %s</string>
     <string name="item_card_playlist_size_format">Nombre de morceaux : %s</string>
 
-
     <!--Menus Contextuelles-->
     <string name="import_song">Importer un son</string>
     <string name="create_new_playlist">Créer une nouvelle playlist</string>
     <string name="add_to_playlist">Ajouter à une playlist</string>
     <string name="delete_song">Supprimer ce morceau</string>
+    <string name="play_playlist">Ecouter cette playlist</string>
+    <string name="delete_playlist">Supprimer cette playlist</string>
 
     <!--Menus Dialog-->
     <string name="ask_new_playlist_name">Quelle est le nom de la nouvelle playlist?</string>
     <string name="ask_new_playlist_name_placeholder_text">Titre</string>
 
     <!-- Autres-->
-    <string name="FEATURE_TODO">TODO : Ajouter à une playlist</string>
+    <string name="FEATURE_TODO">Fonctionalité pas encore ajouté</string>
     <string name="ERROR_MESSAGE_PREVIEW">Apercu d\'un message d\'erreur</string>
+    <string name="ERROR_MESSAGE_SONG_ALREADY_IN_PLAYLIST">Ce morceau est deja dans cette playlist</string>
 
 </resources>

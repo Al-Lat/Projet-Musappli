@@ -1,4 +1,4 @@
-package com.example.projetmuseappli.fileManagment;
+package com.example.projetmuseappli.elements;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -68,8 +68,8 @@ public class MasterlistTest {
         Masterlist masterlist = Masterlist.getInstance();
         UUID uuid = UUID.randomUUID();
         masterlist.addSong(new Song(uuid, "ogg", "To Remove"));
-        
-        assertTrue(masterlist.removeSong(uuid));
+
+        masterlist.removeSong(uuid);
         assertNull(masterlist.getSong(uuid));
     }
 }

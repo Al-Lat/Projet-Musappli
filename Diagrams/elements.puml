@@ -1,0 +1,111 @@
+@startuml
+interface com.example.projetmuseappli.elements.ReferenceElement {
+~ EnumSet<RequiredInformation> getGivenInformation()
+~ HashMap<RequiredInformation,String> getInformations()
+}
+
+class com.example.projetmuseappli.elements.Song {
+- {static} long serialVersionUID
+- UUID UUID
+- String Extension
+- String titre
+- LocalDate dateImport
+- EnumSet<RequiredInformation> RequiredInformations
+- String FORMAT_DATE_DEFAUT
++ {static} List<String> EXTENSIONS_VALIDES
++ UUID getUUID()
++ String getExtension()
++ String getTitre()
++ LocalDate getDate()
++ String getDateString()
++ String getDateString(String)
++ {static} boolean isExtentionValide(String)
++ String toString()
+- String getStringExtensionValides()
++ EnumSet<RequiredInformation> getGivenInformation()
++ HashMap<RequiredInformation,String> getInformations()
+}
+
+
+class com.example.projetmuseappli.elements.Song$SongNameComparator {
++ int compare(Song,Song)
+}
+
+class com.example.projetmuseappli.elements.Song$SongDateComparator {
++ int compare(Song,Song)
+}
+
+class com.example.projetmuseappli.elements.Playlist {
+- UUID uuid
+- List<Song> playlist
+- String name
++ {static} int NAME_MAX_LENGTH
+- LocalDate dateCreation
+- EnumSet<RequiredInformation> RequiredInformations
+- {static} long serialVersionUID
+- {static} String FORMAT_DATE_DEFAUT
++ void addSong(Song)
++ void removeSong(Song)
++ List<Song> getSongList()
++ String getName()
++ int getSize()
++ void setName(String)
++ UUID getUuid()
++ LocalDate getDate()
++ String getDateString()
++ String getDateString(String)
+- void setUUID()
++ EnumSet<RequiredInformation> getGivenInformation()
++ HashMap<RequiredInformation,String> getInformations()
+}
+
+
+class com.example.projetmuseappli.elements.Masterlist {
+- {static} long serialVersionUID
+- {static} String FILE_NAME
+- {static} Context appContext
+- HashMap<UUID,Song> masterlistSongHashMap
+- HashMap<UUID,Playlist> masterlistPlaylistHashMap
+- {static} Masterlist instance
+- List<MasterlistListener> listeners
++ {static} String[] ACCEPTED_FORMATS
+- List<MasterlistListener> getListeners()
++ {static} void init(Context)
++ {static} Masterlist getInstance()
++ void save()
+# Object readResolve()
++ void addListener(MasterlistListener)
++ void removeListener(MasterlistListener)
+- void notifyListeners()
++ LinkedList<Song> getMasterlistSongList()
++ void addSong(Song)
++ Song getSong(UUID)
++ void removeSong(UUID)
++ void removeSong(Song)
++ void addPlaylist(Playlist)
++ Playlist getPlaylist(UUID)
++ void removePlaylist(Playlist)
++ void removeFromPlaylist(Song,Playlist)
++ LinkedList<Playlist> getMasterlistPlaylistList()
++ Object getRawObject(UUID)
++ boolean isEmpty()
+- void fixNullLists()
+}
+
+
+interface com.example.projetmuseappli.elements.MasterlistListener {
+~ void onMasterlistChanged()
+}
+
+
+
+java.io.Serializable <|.. com.example.projetmuseappli.elements.Song
+com.example.projetmuseappli.elements.ReferenceElement <|.. com.example.projetmuseappli.elements.Song
+com.example.projetmuseappli.elements.Song +.. com.example.projetmuseappli.elements.Song$SongNameComparator
+com.example.projetmuseappli.elements.Comparator <|.. com.example.projetmuseappli.elements.Song$SongNameComparator
+com.example.projetmuseappli.elements.Song +.. com.example.projetmuseappli.elements.Song$SongDateComparator
+com.example.projetmuseappli.elements.Comparator <|.. com.example.projetmuseappli.elements.Song$SongDateComparator
+java.io.Serializable <|.. com.example.projetmuseappli.elements.Playlist
+com.example.projetmuseappli.elements.ReferenceElement <|.. com.example.projetmuseappli.elements.Playlist
+java.io.Serializable <|.. com.example.projetmuseappli.elements.Masterlist
+@enduml

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="0dp"
+    android:paddingVertical="15dp"
+    android:orientation="horizontal"
+
+    android:background="?attr/colorPrimary"
+    >
+
+    <ImageButton
+        android:id="@+id/header_back"
+        android:paddingVertical="5dp"
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_marginHorizontal="3dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/standard_background_no_border"
+        app:backgroundTint="@null"
+        android:src="@drawable/ic_back"
+        android:textColor="?attr/textFillColor" />
+
+    <!-- Mode normal : titre de la playlist -->
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="3dp"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Name"
+        android:textColor="?attr/textFillColor"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="visible"/>
+
+    <!-- Mode recherche : champ de saisie (même poids que le titre) -->
+    <EditText
+        android:id="@+id/header_search_input"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="3dp"
+        android:hint="Rechercher"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="?attr/textFillColor"
+        android:visibility="gone" />
+
+    <!-- Mode normal : ouvrir la recherche -->
+    <ImageButton
+        android:id="@+id/header_search"
+        android:paddingVertical="5dp"
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_marginHorizontal="3dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/standard_background_no_border"
+        app:backgroundTint="@null"
+        android:src="@drawable/ic_search"
+        android:visibility="visible"/>
+
+    <!-- Mode recherche : effacer le texte (même poids que la loupe) -->
+    <ImageButton
+        android:id="@+id/header_clear"
+        android:paddingVertical="5dp"
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_marginHorizontal="3dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/standard_background_no_border"
+        app:backgroundTint="@null"
+        android:src="@drawable/ic_close"
+        android:visibility="gone" />
+
+</LinearLayout>

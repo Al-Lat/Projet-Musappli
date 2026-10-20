@@ -34,7 +34,7 @@
             >
 
             <TextView
-                android:id="@+id/textViewTitle"
+                android:id="@+id/playlistTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
@@ -45,7 +45,7 @@
                 />
 
             <TextView
-                android:id="@+id/textViewDate"
+                android:id="@+id/playlistDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Crée le: 01/01/2023"
@@ -54,7 +54,7 @@
                 />
 
             <TextView
-                android:id="@+id/textViewExtension"
+                android:id="@+id/playlistSize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Nombre de morceaux : 1"
