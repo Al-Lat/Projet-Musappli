@@ -2,7 +2,6 @@ package com.example.projetmuseappli.androidClasses.activities;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +12,7 @@ import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.MainFooter;
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.PlaylistHeader;
 import com.example.projetmuseappli.androidClasses.overlays.SongItemPopupMenu;
+import com.example.projetmuseappli.androidClasses.services.PlayerManager;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;
@@ -69,7 +69,12 @@ public class PlaylistActivity extends AppCompatActivity {
                 , new SongAdapter.OnSongClickListener() {
             @Override
             public void onItemClick(Song song) {
-                Toast.makeText(PlaylistActivity.this, "TODO:Play", Toast.LENGTH_SHORT).show();
+                PlayerManager
+                        .getInstance(PlaylistActivity.this)
+                        .playSongFromList(
+                                PlaylistActivity.this,
+                                Masterlist.getInstance().getPlaylist(uuidOfRefPlaylist).getSongList(),
+                                song);
             }
 
             @Override

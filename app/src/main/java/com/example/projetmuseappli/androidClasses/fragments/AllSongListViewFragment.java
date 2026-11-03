@@ -1,11 +1,11 @@
 package com.example.projetmuseappli.androidClasses.fragments;
 
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
 import com.example.projetmuseappli.androidClasses.overlays.SongItemPopupMenu;
+import com.example.projetmuseappli.androidClasses.services.PlayerManager;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 
@@ -56,8 +56,9 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
         return new SongAdapter(getContext(), loadList(), new SongAdapter.OnSongClickListener() {
             @Override
             public void onItemClick(Song song) {
-                Toast.makeText(requireActivity().getApplicationContext(),
-                        getString(R.string.FEATURE_TODO), Toast.LENGTH_SHORT).show();
+                PlayerManager
+                        .getInstance(requireContext())
+                        .playSong(requireContext(), song);
             }
 
             @Override
