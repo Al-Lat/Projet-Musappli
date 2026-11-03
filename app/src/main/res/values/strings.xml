@@ -8,6 +8,7 @@
     <string name="no_songs_found">Vous n\'avez aucun son</string>
     <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
     <string name="import_succesful">Importé avec succes</string>
+    <string name="action_selection_desc">Actions sélection</string>
 
     <string name="confirm">Valider</string>
     <string name="cancel">Annuler</string>
@@ -37,10 +38,12 @@
     <string name="add_to_playlist">Ajouter à une playlist</string>
     <string name="delete_song">Supprimer ce morceau</string>
     <string name="play_playlist">Ecouter cette playlist</string>
+    <string name="rename_playlist">Renommer cette playlist</string>
     <string name="delete_playlist">Supprimer cette playlist</string>
 
     <!--Menus Dialog-->
     <string name="ask_new_playlist_name">Quelle est le nom de la nouvelle playlist?</string>
+    <string name="ask_rename_playlist_name">Nouveau nom de la playlist :</string>
     <string name="ask_new_playlist_name_placeholder_text">Titre</string>
 
     <!-- Autres-->

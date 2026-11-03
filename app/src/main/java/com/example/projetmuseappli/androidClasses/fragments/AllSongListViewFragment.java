@@ -10,6 +10,7 @@ import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Fragment affichant la liste globale de tous les morceaux de musique enregistrés dans l'application.
@@ -62,6 +63,11 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
             @Override
             public void onBurgerClick(View view, SongAdapter.SongViewHolder holder, Song song) {
                 SongItemPopupMenu.showSongItemPopup(view, holder, song);
+            }
+
+            @Override
+            public void onMultipleSongsBurgerClick(View view, Set<Song> selectedSongs) {
+                SongItemPopupMenu.showMultipleSongsItemPopup(view, getAdapter(), selectedSongs);
             }
         });
     }

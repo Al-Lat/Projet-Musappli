@@ -149,6 +149,10 @@ public abstract class RecyclerListViewFragmentAbstract<ListType, AdapterType ext
         super.onStart();
         Masterlist.getInstance().addListener(this);
     }
+    @Override public void onResume() {
+        super.onResume();
+        refrechFragment();
+    }
     @Override public void onStop()  {
         super.onStop();
         Masterlist.getInstance().removeListener(this);

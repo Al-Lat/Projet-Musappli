@@ -1,5 +1,6 @@
 package com.example.projetmuseappli.androidClasses.overlays;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
@@ -7,9 +8,14 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
-import com.example.projetmuseappli.androidClasses.composant.adapters.MediaRecyclerViewAdapterInterface;
+import com.example.projetmuseappli.androidClasses.composant.adapters.PlaylistAdapter;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Classe utilitaire pour l'affichage du menu contextuel (Popup Menu) d'un item de playlist.
@@ -17,7 +23,7 @@ import com.example.projetmuseappli.elements.Playlist;
 public class PlaylistItemPopupMenu {
 
     /**
-     * Affiche un menu contextuel pour un élément de playlist (ex: suppression, lecture).
+     * Affiche un menu contextuel pour un élément de playlist.
      *
      * @param view La vue ancre pour l'affichage du menu.
      * @param holder Le ViewHolder auquel est rattachée la playlist.
@@ -25,32 +31,65 @@ public class PlaylistItemPopupMenu {
      */
     public static void showPlaylistItemPopup(View view, RecyclerView.ViewHolder holder, Playlist currentPlaylist) {
 
-        MediaRecyclerViewAdapterInterface adapterOfItem = (MediaRecyclerViewAdapterInterface) holder.getBindingAdapter();
+        PlaylistAdapter playlistAdapter = null;
+        if (holder != null && holder.getBindingAdapter() instanceof PlaylistAdapter) {
+            playlistAdapter = (PlaylistAdapter) holder.getBindingAdapter();
+        }
 
-        PopupMenu pop = new PopupMenu(adapterOfItem.getContext(),view);
+        List<Playlist> playlistsToProcess = currentPlaylist != null ? Collections.singletonList(currentPlaylist) : Collections.emptyList();
+        displayPopupMenu(view, playlistAdapter, playlistsToProcess);
+    }
+
+    /**
+     * Affiche le menu contextuel d'options pour l'ensemble des playlists sélectionnées.
+     *
+     * @param view La vue ancre (ex: bouton flottant).
+     * @param adapter L'adaptateur de playlists.
+     * @param selectedPlaylists L'ensemble des playlists sélectionnées.
+     */
+    public static void showMultiplePlaylistsItemPopup(View view, PlaylistAdapter adapter, Set<Playlist> selectedPlaylists) {
+        if (selectedPlaylists == null || selectedPlaylists.isEmpty()) {
+            return;
+        }
+        displayPopupMenu(view, adapter, new ArrayList<>(selectedPlaylists));
+    }
+
+    private static void displayPopupMenu(View view, PlaylistAdapter adapter, List<Playlist> playlistsToProcess) {
+        if (playlistsToProcess == null || playlistsToProcess.isEmpty()) {
+            return;
+        }
+
+        Context context = view.getContext();
+        PopupMenu pop = new PopupMenu(context, view);
         pop.getMenuInflater().inflate(R.menu.context_menu_playlist, pop.getMenu());
+
         pop.setOnMenuItemClickListener((menuItem) -> {
             int itemId = menuItem.getItemId();
 
-            int currentPosition = holder.getBindingAdapterPosition();
-            if (currentPosition == RecyclerView.NO_POSITION) {
-                return false; // sécurité : le holder n'est plus attaché à un item valide
-            }
-
             if (itemId == R.id.action_delete_playlist) {
-
-                /*suppression reel*/
-                Masterlist.getInstance().removePlaylist(currentPlaylist);
-
-                /*actualisation de la vue*/
-                holder.getBindingAdapter().notifyItemRemoved(currentPosition);
-                holder.getBindingAdapter().notifyItemRangeChanged(currentPosition, adapterOfItem.getListOfAdapter().size() - currentPosition);
-
+                for (Playlist playlist : playlistsToProcess) {
+                    Masterlist.getInstance().removePlaylist(playlist);
+                }
+                if (adapter != null) {
+                    adapter.clearSelection();
+                    adapter.notifyDataSetChanged();
+                }
+                return true;
+            } else if (itemId == R.id.action_rename_playlist) {
+                Playlist target = playlistsToProcess.get(0);
+                new PlaylistMenuChain(context).beginRenamePlaylistChain(target, () -> {
+                    if (adapter != null) {
+                        adapter.clearSelection();
+                        adapter.notifyDataSetChanged();
+                    }
+                });
                 return true;
             } else if (itemId == R.id.action_play_playlist) {
-                /*Debuter la lecture d'une playlist*/
-                Toast.makeText(adapterOfItem.getContext(), adapterOfItem.getContext().getString(R.string.FEATURE_TODO), Toast.LENGTH_SHORT).show();
-                //TODO implémenter apres ajout de la lecture de son
+                Toast.makeText(context, context.getString(R.string.FEATURE_TODO), Toast.LENGTH_SHORT).show();
+                if (adapter != null) {
+                    adapter.clearSelection();
+                }
+                return true;
             }
             return false;
         });

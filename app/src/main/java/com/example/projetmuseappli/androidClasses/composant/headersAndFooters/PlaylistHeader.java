@@ -3,17 +3,25 @@ package com.example.projetmuseappli.androidClasses.composant.headersAndFooters;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
+import com.example.projetmuseappli.androidClasses.overlays.PlaylistMenuChain;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
+import com.example.projetmuseappli.elements.Song;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,15 +36,19 @@ public class PlaylistHeader {
     private SongAdapter adapter;
 
     private UUID uuidOfPlaylist;
+    private Playlist playlist;
 
     /*Indique si l'on doit afficher la barre de recherche ou non*/
     private boolean searchMode = false;
 
-    private ImageButton headerBack;
     private ImageButton headerSearch;
     private ImageButton headerClear;
     private TextView headerTitle;
     private EditText searchInput;
+
+    public void setPlaylistAdapter(SongAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     /**
      * Interface d'écoute pour la filtration des résultats de la playlist.
@@ -60,6 +72,7 @@ public class PlaylistHeader {
     public PlaylistHeader(Activity activity, UUID uuidOfPlaylist, SongAdapter adapter){
         this.activity = activity;
         this.uuidOfPlaylist = uuidOfPlaylist;
+        this.playlist = Masterlist.getInstance().getPlaylist(uuidOfPlaylist);
         this.adapter = adapter;
         setup();
     }
@@ -73,26 +86,45 @@ public class PlaylistHeader {
      */
     public PlaylistHeader(Activity activity, Playlist playlist, SongAdapter adapter){
         this.activity = activity;
-        this.uuidOfPlaylist = playlist.getUuid();
+        this.playlist = playlist;
+        if (playlist != null) {
+            this.uuidOfPlaylist = playlist.getUuid();
+        }
         this.adapter = adapter;
         setup();
     }
 
     private void setup() {
 
-        this.headerBack   = activity.findViewById(R.id.header_back);
+        ImageButton headerBack = activity.findViewById(R.id.header_back);
         this.headerSearch = activity.findViewById(R.id.header_search);
         this.headerClear  = activity.findViewById(R.id.header_clear);
         this.headerTitle  = activity.findViewById(R.id.header_title);
         this.searchInput  = activity.findViewById(R.id.header_search_input);
 
-        headerTitle.setText(Masterlist.getInstance().getPlaylist(uuidOfPlaylist).getName());
+        Playlist p = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
+        if (p != null) {
+            headerTitle.setText(p.getName());
+        }
+
+        headerTitle.setOnClickListener(v -> {
+            Playlist targetPlaylist = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
+            if (targetPlaylist != null) {
+                new PlaylistMenuChain(activity).beginRenamePlaylistChain(targetPlaylist, () -> {
+                    headerTitle.setText(targetPlaylist.getName());
+                });
+            }
+        });
 
         headerBack.setOnClickListener(v -> {
             if (searchMode) {
                 setSearchMode(false);
             } else {
-                activity.onBackPressed();
+                if (activity instanceof AppCompatActivity) {
+                    ((AppCompatActivity) activity).getOnBackPressedDispatcher().onBackPressed();
+                } else {
+                    activity.finish();
+                }
             }
         });
 
@@ -100,6 +132,18 @@ public class PlaylistHeader {
 
         headerSearch.setOnClickListener(v -> setSearchMode(true));
 
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterSongs(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void setSearchMode(boolean enabled) {
@@ -110,6 +154,8 @@ public class PlaylistHeader {
             headerSearch.setVisibility(View.GONE);
             searchInput.setVisibility(View.VISIBLE);
             headerClear.setVisibility(View.VISIBLE);
+
+            clearTextInput();
 
             searchInput.requestFocus();
             InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
@@ -129,6 +175,41 @@ public class PlaylistHeader {
 
     private void clearTextInput(){
         searchInput.setText("");
+    }
+
+    private List<Song> getOriginalSongList() {
+        if (uuidOfPlaylist != null) {
+            Playlist p = Masterlist.getInstance().getPlaylist(uuidOfPlaylist);
+            if (p != null && p.getSongList() != null) {
+                return p.getSongList();
+            }
+        }
+        if (playlist != null && playlist.getSongList() != null) {
+            return playlist.getSongList();
+        }
+        return new ArrayList<>();
+    }
+
+    public void filterSongs(String query) {
+        if (adapter == null) {
+            return;
+        }
+
+        List<Song> originalList = getOriginalSongList();
+
+        if (query == null || query.isEmpty()) {
+            adapter.setItems(new ArrayList<>(originalList));
+            return;
+        }
+
+        String lowerQuery = query.toLowerCase();
+        List<Song> filteredList = new ArrayList<>();
+        for (Song song : originalList) {
+            if (song != null && song.getTitre() != null && song.getTitre().toLowerCase().contains(lowerQuery)) {
+                filteredList.add(song);
+            }
+        }
+        adapter.setItems(filteredList);
     }
 
     private void hideKeyboard() {

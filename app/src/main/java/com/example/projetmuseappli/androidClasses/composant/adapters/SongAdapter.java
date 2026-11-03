@@ -6,20 +6,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.elements.Song;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Adaptateur pour la {@link RecyclerView} affichant la liste des morceaux de musique (objets {@link Song}).
- * Gère l'affichage des titres, extensions, dates d'import et les clics utilisateur.
+ * Gère l'affichage des titres, extensions, dates d'import, les clics et le mode sélection multiple.
  */
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder>
-        implements MediaRecyclerViewAdapterInterface<Song> {
+        implements MultiSelectAdapterInterface<Song> {
 
     /**
      * Interface définissant un listener regroupant les méthodes à fournir à l'adaptateur pour gérer les clics.
@@ -40,12 +44,24 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
          * @param currentSong Le morceau sélectionné.
          */
         void onBurgerClick(View view, SongViewHolder holder, Song currentSong);
+
+        /**
+         * Événement de gestion du clic sur le bouton d'actions sur l'ensemble des morceaux sélectionnés.
+         *
+         * @param view La vue ancre (ex: bouton flottant).
+         * @param selectedSongs L'ensemble des morceaux actuellement sélectionnés.
+         */
+        void onMultipleSongsBurgerClick(View view, Set<Song> selectedSongs);
     }
 
     /*Liste des sons à afficher*/
     private List<Song> songList;
     private Context appContext;
     private OnSongClickListener listener;
+
+    private final Set<Song> selectedSongs = new HashSet<>();
+    private View floatingActionButton;
+    private OnBackPressedCallback onBackPressedCallback;
 
     /**
      * Construit un adaptateur de morceaux de musique.
@@ -58,6 +74,93 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         this.appContext = appContext;
         this.songList = songList;
         this.listener = listener;
+    }
+
+    @Override
+    public boolean isSelectionMode() {
+        return !selectedSongs.isEmpty();
+    }
+
+    @Override
+    public Set<Song> getSelectedItems() {
+        return getSelectedSongs();
+    }
+
+    public Set<Song> getSelectedSongs() {
+        return new HashSet<>(selectedSongs);
+    }
+
+    @Override
+    public void toggleSelection(Song song) {
+        if (selectedSongs.contains(song)) {
+            selectedSongs.remove(song);
+        } else {
+            selectedSongs.add(song);
+        }
+        updateSelectionState();
+    }
+
+    @Override
+    public void clearSelection() {
+        selectedSongs.clear();
+        updateSelectionState();
+    }
+
+    @Override
+    public void setFloatingActionButton(View fab) {
+        this.floatingActionButton = fab;
+        if (fab != null) {
+            fab.setOnClickListener(v -> {
+                if (listener != null && isSelectionMode()) {
+                    listener.onMultipleSongsBurgerClick(v, getSelectedSongs());
+                }
+            });
+            fab.setVisibility(isSelectionMode() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateSelectionState() {
+        boolean active = isSelectionMode();
+        if (floatingActionButton != null) {
+            floatingActionButton.setVisibility(active ? View.VISIBLE : View.GONE);
+        }
+        if (onBackPressedCallback != null) {
+            onBackPressedCallback.setEnabled(active);
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (floatingActionButton == null && recyclerView.getRootView() != null) {
+            View fab = recyclerView.getRootView().findViewById(R.id.floatingActionButtonMultiSelect);
+            if (fab != null) {
+                setFloatingActionButton(fab);
+            }
+        }
+        Context context = recyclerView.getContext();
+        if (context instanceof OnBackPressedDispatcherOwner) {
+            OnBackPressedDispatcherOwner owner = (OnBackPressedDispatcherOwner) context;
+            if (onBackPressedCallback == null) {
+                onBackPressedCallback = new OnBackPressedCallback(false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        clearSelection();
+                    }
+                };
+                owner.getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
+            }
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        if (onBackPressedCallback != null) {
+            onBackPressedCallback.remove();
+            onBackPressedCallback = null;
+        }
     }
 
     /**
@@ -83,8 +186,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
      */
     @Override
     public void onBindViewHolder(@NonNull SongViewHolder holder, int position) {
-        /*Definir les valeurs d'affichage*/
         Song currentSong = songList.get(position);
+        boolean isSelected = selectedSongs.contains(currentSong);
 
         holder.textViewTitle.setText(currentSong.getTitre());
 
@@ -98,15 +201,28 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
                         , currentSong.getDate())
         );
 
+        holder.itemView.setSelected(isSelected);
+        holder.itemView.setActivated(isSelected);
+        holder.itemView.setAlpha(isSelected ? 0.5f : 1.0f);
+
         /*Gestion des actions*/
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
+            if (isSelectionMode()) {
+                toggleSelection(currentSong);
+            } else if (listener != null) {
                 this.listener.onItemClick(currentSong);
             }
         });
 
+        holder.itemView.setOnLongClickListener(v -> {
+            toggleSelection(currentSong);
+            return true;
+        });
+
         holder.buttonBurger.setOnClickListener(view -> {
-            if (listener != null) {
+            if (isSelectionMode()) {
+                toggleSelection(currentSong);
+            } else if (listener != null) {
                 this.listener.onBurgerClick(view, holder, currentSong);
             }
         });
@@ -133,14 +249,19 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     }
 
     /**
-     * Met à jour la liste des morceaux et raffraîchit l'affichage.
+     * Met à jour la liste des morceaux et rafraîchit l'affichage.
      *
      * @param newItems La nouvelle liste de morceaux.
      */
     @Override
     public void setItems(List<Song> newItems) {
         this.songList = newItems;
-        notifyDataSetChanged();
+        if (newItems != null) {
+            selectedSongs.retainAll(newItems);
+        } else {
+            selectedSongs.clear();
+        }
+        updateSelectionState();
     }
 
     /**
@@ -169,7 +290,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
          */
         public SongViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Liaison des éléments graphiques du layout item_song.xml par leur ID
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewExtension = itemView.findViewById(R.id.textViewExtension);
             textViewDate = itemView.findViewById(R.id.textViewDate);

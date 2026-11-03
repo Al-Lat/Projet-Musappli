@@ -17,6 +17,7 @@ import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -56,7 +57,8 @@ public class PlaylistActivity extends AppCompatActivity {
         adapter.setItems(Masterlist.getInstance().getPlaylist(uuidOfRefPlaylist).getSongList());
         recyclerView.setAdapter(adapter);
 
-        this.header = new PlaylistHeader(this,uuidOfRefPlaylist, adapter);
+        this.header = new PlaylistHeader(this, uuidOfRefPlaylist, adapter);
+        this.header.setPlaylistAdapter(adapter);
         this.footer = new MainFooter(this);
 
     }
@@ -73,6 +75,11 @@ public class PlaylistActivity extends AppCompatActivity {
             @Override
             public void onBurgerClick(View view, SongAdapter.SongViewHolder holder, Song currentSong) {
                 SongItemPopupMenu.showSongItemPopup(view, holder, currentSong);
+            }
+
+            @Override
+            public void onMultipleSongsBurgerClick(View view, Set<Song> selectedSongs) {
+                SongItemPopupMenu.showMultipleSongsItemPopup(view, adapter, selectedSongs);
             }
         });
 

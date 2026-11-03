@@ -127,7 +127,11 @@ public class Masterlist implements Serializable {
     /**
      * Sauvegarde l'état actuel de la Masterlist dans le stockage interne de l'application.
      */
-    public void save() {
+    public synchronized void save() {
+        if (appContext == null) {
+            Log.e("Masterlist", "Erreur lors de la sauvegarde : appContext est null");
+            return;
+        }
         try (FileOutputStream fos = appContext.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this);
@@ -170,7 +174,7 @@ public class Masterlist implements Serializable {
         getListeners().remove(listener);
     }
 
-    private void notifyListeners() {
+    public void notifyListeners() {
         for (MasterlistListener listener : getListeners()) {
             listener.onMasterlistChanged();
         }
@@ -233,8 +237,8 @@ public class Masterlist implements Serializable {
      */
     public void addPlaylist(@NonNull Playlist playlist){
         masterlistPlaylistHashMap.put(playlist.getUuid(),playlist);
-        this.notifyListeners();
         save();
+        this.notifyListeners();
     }
 
     /**
@@ -254,8 +258,42 @@ public class Masterlist implements Serializable {
      */
     public void removePlaylist(@NonNull Playlist playlist){
         masterlistPlaylistHashMap.remove(playlist.getUuid());
-        this.notifyListeners();
         save();
+        this.notifyListeners();
+    }
+
+    /**
+     * Ajoute un morceau de musique à une playlist donnée et sauvegarde les modifications.
+     *
+     * @param playlist La {@link Playlist} cible.
+     * @param song Le morceau {@link Song} à ajouter.
+     */
+    public void addToPlaylist(@NonNull Playlist playlist, @NonNull Song song) {
+        playlist.addSong(song);
+        save();
+        this.notifyListeners();
+    }
+
+    /**
+     * Ajoute plusieurs morceaux de musique à une playlist donnée et sauvegarde les modifications.
+     *
+     * @param playlist La {@link Playlist} cible.
+     * @param songs La liste des morceaux {@link Song} à ajouter.
+     * @return Le nombre de morceaux effectivement ajoutés.
+     */
+    public int addToPlaylist(@NonNull Playlist playlist, @NonNull List<Song> songs) {
+        int addedCount = 0;
+        for (Song song : songs) {
+            if (song != null && !playlist.getSongList().contains(song)) {
+                playlist.addSong(song);
+                addedCount++;
+            }
+        }
+        if (addedCount > 0) {
+            save();
+            this.notifyListeners();
+        }
+        return addedCount;
     }
 
     /**
@@ -266,8 +304,8 @@ public class Masterlist implements Serializable {
      */
     public void removeFromPlaylist(@NonNull Song song, @NonNull Playlist playlist){
         playlist.removeSong(song);
-        this.notifyListeners();
         save();
+        this.notifyListeners();
     }
 
     /**

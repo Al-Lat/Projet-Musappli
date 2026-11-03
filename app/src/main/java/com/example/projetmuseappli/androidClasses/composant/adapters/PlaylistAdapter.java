@@ -6,18 +6,24 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.elements.Playlist;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Adaptateur de {@link RecyclerView} pour l'affichage complet des playlists.
+ * Gère l'affichage, les clics et le mode sélection multiple.
  */
-public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.PlaylistViewHolder>{
+public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.PlaylistViewHolder>
+        implements MultiSelectAdapterInterface<Playlist> {
 
     /**
      * Interface de gestion des événements utilisateur (clic et menu d'options) sur une playlist.
@@ -39,9 +45,20 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
          */
         void onBurgerClick(View view, PlaylistViewHolder viewHolder, Playlist playlist);
 
+        /**
+         * Événement de gestion du clic sur le bouton d'actions sur l'ensemble des playlists sélectionnées.
+         *
+         * @param view La vue ancre (ex: bouton flottant).
+         * @param selectedPlaylists L'ensemble des playlists actuellement sélectionnées.
+         */
+        void onMultiplePlaylistsBurgerClick(View view, Set<Playlist> selectedPlaylists);
     }
 
     private OnPlaylistClickListener listener;
+
+    private final Set<Playlist> selectedPlaylists = new HashSet<>();
+    private View floatingActionButton;
+    private OnBackPressedCallback onBackPressedCallback;
 
     /** Identifiant de layout pour un item de playlist. */
     public static final int ITEM_LAYOUT_ID = R.layout.item_playlist;
@@ -56,6 +73,93 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
     public PlaylistAdapter(Context appContext, List<Playlist> allPlaylist, OnPlaylistClickListener listener) {
         super(appContext, allPlaylist);
         this.listener = listener;
+    }
+
+    @Override
+    public boolean isSelectionMode() {
+        return !selectedPlaylists.isEmpty();
+    }
+
+    @Override
+    public Set<Playlist> getSelectedItems() {
+        return getSelectedPlaylists();
+    }
+
+    public Set<Playlist> getSelectedPlaylists() {
+        return new HashSet<>(selectedPlaylists);
+    }
+
+    @Override
+    public void toggleSelection(Playlist playlist) {
+        if (selectedPlaylists.contains(playlist)) {
+            selectedPlaylists.remove(playlist);
+        } else {
+            selectedPlaylists.add(playlist);
+        }
+        updateSelectionState();
+    }
+
+    @Override
+    public void clearSelection() {
+        selectedPlaylists.clear();
+        updateSelectionState();
+    }
+
+    @Override
+    public void setFloatingActionButton(View fab) {
+        this.floatingActionButton = fab;
+        if (fab != null) {
+            fab.setOnClickListener(v -> {
+                if (listener != null && isSelectionMode()) {
+                    listener.onMultiplePlaylistsBurgerClick(v, getSelectedPlaylists());
+                }
+            });
+            fab.setVisibility(isSelectionMode() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateSelectionState() {
+        boolean active = isSelectionMode();
+        if (floatingActionButton != null) {
+            floatingActionButton.setVisibility(active ? View.VISIBLE : View.GONE);
+        }
+        if (onBackPressedCallback != null) {
+            onBackPressedCallback.setEnabled(active);
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (floatingActionButton == null && recyclerView.getRootView() != null) {
+            View fab = recyclerView.getRootView().findViewById(R.id.floatingActionButtonMultiSelect);
+            if (fab != null) {
+                setFloatingActionButton(fab);
+            }
+        }
+        Context context = recyclerView.getContext();
+        if (context instanceof OnBackPressedDispatcherOwner) {
+            OnBackPressedDispatcherOwner owner = (OnBackPressedDispatcherOwner) context;
+            if (onBackPressedCallback == null) {
+                onBackPressedCallback = new OnBackPressedCallback(false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        clearSelection();
+                    }
+                };
+                owner.getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
+            }
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        if (onBackPressedCallback != null) {
+            onBackPressedCallback.remove();
+            onBackPressedCallback = null;
+        }
     }
 
     /**
@@ -80,6 +184,7 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
     @Override
     public void onBindViewHolder(@NonNull PlaylistViewHolder holder, int position) {
         Playlist currentPlaylist = this.playlistList.get(position);
+        boolean isSelected = selectedPlaylists.contains(currentPlaylist);
 
         holder.date.setText(
                 String.format(appContext.getString(R.string.item_card_date_creation_format)
@@ -93,14 +198,42 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
 
         holder.title.setText(currentPlaylist.getName());
 
+        holder.itemView.setSelected(isSelected);
+        holder.itemView.setActivated(isSelected);
+        holder.itemView.setAlpha(isSelected ? 0.5f : 1.0f);
+
         /*gestion des actions*/
         holder.itemView.setOnClickListener(view -> {
-            this.listener.onItemClick(currentPlaylist);
+            if (isSelectionMode()) {
+                toggleSelection(currentPlaylist);
+            } else if (listener != null) {
+                this.listener.onItemClick(currentPlaylist);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(view -> {
+            toggleSelection(currentPlaylist);
+            return true;
         });
 
         holder.burgerButton.setOnClickListener(view -> {
-            this.listener.onBurgerClick(view,holder,currentPlaylist);
+            if (isSelectionMode()) {
+                toggleSelection(currentPlaylist);
+            } else if (listener != null) {
+                this.listener.onBurgerClick(view,holder,currentPlaylist);
+            }
         });
+    }
+
+    @Override
+    public void setItems(List<Playlist> newItems) {
+        super.setItems(newItems);
+        if (newItems != null) {
+            selectedPlaylists.retainAll(newItems);
+        } else {
+            selectedPlaylists.clear();
+        }
+        updateSelectionState();
     }
 
     /**

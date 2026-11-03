@@ -12,6 +12,7 @@ import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Fragment affichant la liste de toutes les playlists enregistrées dans l'application.
@@ -70,6 +71,11 @@ public class AllPlaylistListViewFragment extends RecyclerListViewFragmentAbstrac
             @Override
             public void onBurgerClick(View view, PlaylistAdapter.PlaylistViewHolder viewHolder, Playlist playlist) {
                 PlaylistItemPopupMenu.showPlaylistItemPopup(view, viewHolder, playlist);
+            }
+
+            @Override
+            public void onMultiplePlaylistsBurgerClick(View view, Set<Playlist> selectedPlaylists) {
+                PlaylistItemPopupMenu.showMultiplePlaylistsItemPopup(view, getAdapter(), selectedPlaylists);
             }
         });
     }
