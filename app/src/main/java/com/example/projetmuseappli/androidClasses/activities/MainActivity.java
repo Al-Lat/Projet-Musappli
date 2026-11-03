@@ -11,6 +11,8 @@ import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.Ma
 import com.example.projetmuseappli.androidClasses.fragments.FragmentList;
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.AllPlaylistListViewFragmentStrategy;
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.AllSongListViewFragmentStrategy;
+import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.HistoryListViewFragmentStrategy;
+import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.ImportFragmentStrategy;
 import com.example.projetmuseappli.elements.Masterlist;
 
 /**
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         FragmentList list = new FragmentList();
         list.addFragment(new AllSongListViewFragmentStrategy());
         list.addFragment(new AllPlaylistListViewFragmentStrategy());
+        list.addFragment(new HistoryListViewFragmentStrategy());
+        list.addFragment(new ImportFragmentStrategy());
         return list;
     }
 

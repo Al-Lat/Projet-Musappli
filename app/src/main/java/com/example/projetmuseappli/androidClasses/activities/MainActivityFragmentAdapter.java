@@ -12,8 +12,6 @@ import com.example.projetmuseappli.androidClasses.fragments.FragmentList;
  */
 public class MainActivityFragmentAdapter extends FragmentStateAdapter {
 
-    private static final int NUMBER_OF_FRAGMENTS = 2;
-
     private FragmentList listOfFragments;
 
     /**

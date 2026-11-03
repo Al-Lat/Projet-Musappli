@@ -9,7 +9,6 @@ import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultCaller;
 import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
@@ -17,7 +16,6 @@ import androidx.media3.common.Timeline;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
-import com.example.projetmuseappli.androidClasses.utilitaries.ImportHelper;
 
 import java.util.Locale;
 
@@ -31,7 +29,6 @@ public class MainFooter {
     public static final int FOOTER_ID = R.layout.component_footer;
 
     private final Activity activity;
-    private final ImportHelper importHelper;
 
     private final ImageButton boutonPlayPause;
     private final ImageButton previousButton;
@@ -86,12 +83,6 @@ public class MainFooter {
      */
     public MainFooter(Activity activity){
         this.activity = activity;
-        this.importHelper = new ImportHelper((ActivityResultCaller) activity);
-
-        ImageButton boutonImport = activity.findViewById(R.id.importButton);
-        if (boutonImport != null) {
-            boutonImport.setOnClickListener(view -> importHelper.launch());
-        }
 
         boutonPlayPause = activity.findViewById(R.id.playPauseButton);
         previousButton = activity.findViewById(R.id.previousButton);
@@ -252,20 +243,5 @@ public class MainFooter {
         if (isPlaying) {
             startProgressUpdate();
         }
-    }
-
-    @Deprecated
-    private static void summonGeneralPopup(Activity activity, View view, ImportHelper importHelper) {
-        PopupMenu popup = new PopupMenu(activity, view);
-        popup.getMenuInflater().inflate(R.menu.context_menu_global, popup.getMenu());
-        popup.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.action_import) {
-                importHelper.launch();
-                return true;
-            }
-            return false;
-        });
-        popup.show();
     }
 }

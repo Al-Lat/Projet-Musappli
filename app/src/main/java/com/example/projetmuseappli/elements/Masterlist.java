@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -69,8 +71,8 @@ public class Masterlist implements Serializable {
     final public static String[] ACCEPTED_FORMATS = {"audio/mpeg", "audio/x-flac", "audio/ogg", "application/ogg"};
 
     private Masterlist(){
-        masterlistSongHashMap = new HashMap<>();
-        masterlistPlaylistHashMap = new HashMap<>();
+        masterlistSongHashMap = new LinkedHashMap<>();
+        masterlistPlaylistHashMap = new LinkedHashMap<>();
     }
 
     /**
@@ -181,12 +183,15 @@ public class Masterlist implements Serializable {
     }
 
     /**
-     * Retourne l'ensemble des morceaux de musique enregistrés.
+     * Retourne l'ensemble des morceaux de musique enregistrés, triés par date d'import du plus récent au plus ancien.
      *
      * @return Une {@link LinkedList} contenant tous les objets {@link Song}.
      */
     public LinkedList<Song> getMasterlistSongList() {
-        return new LinkedList<>(masterlistSongHashMap.values());
+        LinkedList<Song> list = new LinkedList<>(masterlistSongHashMap.values());
+        Collections.reverse(list);
+        list.sort((s1, s2) -> s2.getDate().compareTo(s1.getDate()));
+        return list;
     }
 
     /**
@@ -349,10 +354,10 @@ public class Masterlist implements Serializable {
     /*convertit les listes/hashmaps attributs de la classe null en listes vides*/
     private void fixNullLists(){
         if (this.masterlistSongHashMap == null ){
-            this.masterlistSongHashMap = new HashMap<>();
+            this.masterlistSongHashMap = new LinkedHashMap<>();
         }
         if (this.masterlistPlaylistHashMap == null ){
-            this.masterlistPlaylistHashMap = new HashMap<>();
+            this.masterlistPlaylistHashMap = new LinkedHashMap<>();
         }
     }
 

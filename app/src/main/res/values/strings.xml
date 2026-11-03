@@ -7,6 +7,9 @@
     <string name="no_item_found">La liste n\'as aucun item</string>
     <string name="no_songs_found">Vous n\'avez aucun son</string>
     <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
+    <string name="no_history_found">Aucun historique de lecture</string>
+    <string name="menu_import_local">Import local</string>
+    <string name="import_local_button_text">Import local</string>
     <string name="import_succesful">Importé avec succes</string>
     <string name="action_selection_desc">Actions sélection</string>
 

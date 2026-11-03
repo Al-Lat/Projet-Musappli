@@ -12,12 +12,15 @@ import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 
+import com.example.projetmuseappli.androidClasses.utilitaries.PlaybackHistoryManager;
+import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Gestionnaire responsable de la connexion au {@link PlaybackService} et du lancement de la lecture audio avec Jetpack Media3.
@@ -35,6 +38,24 @@ public class PlayerManager {
         controllerFuture.addListener(() -> {
             try {
                 mediaController = controllerFuture.get();
+                if (mediaController != null) {
+                    mediaController.addListener(new Player.Listener() {
+                        @Override
+                        public void onMediaItemTransition(MediaItem mediaItem, int reason) {
+                            if (mediaItem != null && mediaItem.mediaId != null) {
+                                try {
+                                    UUID uuid = UUID.fromString(mediaItem.mediaId);
+                                    Song song = Masterlist.getInstance().getSong(uuid);
+                                    if (song != null) {
+                                        PlaybackHistoryManager
+                                                .getInstance(appContext)
+                                                .addSongToHistory(appContext, song);
+                                    }
+                                } catch (Exception ignored) {}
+                            }
+                        }
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -62,6 +83,10 @@ public class PlayerManager {
      */
     public void playSong(Context context, Song song) {
         if (song == null) return;
+
+        PlaybackHistoryManager
+                .getInstance(context)
+                .addSongToHistory(context, song);
 
         File targetFile = new File(context.getFilesDir(), song.getUUID().toString() + "." + song.getExtension());
         if (!targetFile.exists()) {
@@ -106,6 +131,10 @@ public class PlayerManager {
      */
     public void playSongFromList(Context context, List<Song> songList, Song songToPlay) {
         if (songToPlay == null) return;
+
+        PlaybackHistoryManager
+                .getInstance(context)
+                .addSongToHistory(context, songToPlay);
 
         File targetFile = new File(context.getFilesDir(), songToPlay.getUUID().toString() + "." + songToPlay.getExtension());
         if (!targetFile.exists()) {

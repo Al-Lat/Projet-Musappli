@@ -35,7 +35,8 @@ public class MainHeader {
         fragmentTitle = new String[]{
                 activity.getString(R.string.menu_all_songs),
                 activity.getString(R.string.menu_playlist),
-                activity.getString(R.string.menu_history)
+                activity.getString(R.string.menu_history),
+                activity.getString(R.string.menu_import_local)
         };
 
         new TabLayoutMediator(tabLayout, viewPager,

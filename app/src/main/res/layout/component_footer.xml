@@ -97,23 +97,6 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
-        <View
-            android:id="@+id/footerSpacer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <!-- Import Button -->
-        <ImageButton
-            android:id="@+id/importButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="3dp"
-            android:src="@drawable/ic_add"
-            android:background="@drawable/menu_add_button"
-            app:tint="?attr/textFillColor"
-            android:contentDescription="@string/import_button_text" />
-
     </LinearLayout>
 
 </LinearLayout>
