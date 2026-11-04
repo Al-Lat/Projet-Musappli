@@ -1,14 +1,12 @@
 <resources>
     <!--Global / racine-->
     <string name="app_name">Projet Museappli</string>
-    <string name="menu_all_songs">Tout les morceaux</string>
-    <string name="menu_playlist">Playlists</string>
-    <string name="menu_history">Historique</string>
+
     <string name="no_item_found">La liste n\'as aucun item</string>
     <string name="no_songs_found">Vous n\'avez aucun son</string>
     <string name="no_playlist_found">Vous n\'avez aucune playlist</string>
     <string name="no_history_found">Aucun historique de lecture</string>
-    <string name="menu_import_local">Import local</string>
+
     <string name="import_local_button_text">Import local</string>
     <string name="import_succesful">Importé avec succes</string>
     <string name="action_selection_desc">Actions sélection</string>
@@ -18,6 +16,12 @@
 
     <string name="yes">Oui</string>
     <string name="no">Non</string>
+
+    <!--Main Activity-->
+    <string name="menu_all_songs">Tout les morceaux</string>
+    <string name="menu_playlist">Playlists</string>
+    <string name="menu_history">Historique</string>
+    <string name="menu_import">Import</string>
 
     <!--Menu contextuelle son-->
     <string name="delete_button_text">Supprimer</string>
@@ -31,13 +35,13 @@
     <string name="play_pause_button_text">Lecture / Pause</string>
     <string name="previous_song_button_text">Morceau précédent</string>
     <string name="next_song_button_text">Morceau suivant</string>
-    <string name="default_time_format">00:00 / 00:00</string>
+    <string name="default_time_format">00:00:00 / 00:00:00</string>
 
     <!--ItemCard (item pour chaque son/playlist)-->
     <string name="item_card_date_format">Ajouté le : %s</string>
     <string name="item_card_date_creation_format">Crée le : %s</string>
     <string name="item_card_extension_format">Extension : %s</string>
-    <string name="item_card_playlist_size_format">Nombre de morceaux : %s</string>
+    <string name="item_card_playlist_size_format">%s Morceaux</string>
 
     <!--Menus Contextuelles-->
     <string name="import_song">Importer un son</string>

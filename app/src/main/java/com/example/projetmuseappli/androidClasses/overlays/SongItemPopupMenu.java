@@ -66,13 +66,15 @@ public class SongItemPopupMenu {
             int itemId = menuItem.getItemId();
 
             if (itemId == R.id.action_delete_song) {
-                for (Song song : songsToProcess) {
-                    Masterlist.getInstance().removeSong(song);
-                }
-                if (adapter != null) {
-                    adapter.clearSelection();
-                    adapter.notifyDataSetChanged();
-                }
+                ConfirmationDialogHelper.showDeleteConfirmationDialog(context, () -> {
+                    for (Song song : songsToProcess) {
+                        Masterlist.getInstance().removeSong(song);
+                    }
+                    if (adapter != null) {
+                        adapter.clearSelection();
+                        adapter.notifyDataSetChanged();
+                    }
+                });
                 return true;
             } else if (itemId == R.id.action_add_to_playlist) {
                 new PlaylistMenuChain(context).beginAddToPlaylistChain(songsToProcess);

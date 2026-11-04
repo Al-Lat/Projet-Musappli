@@ -108,6 +108,9 @@ public class PlaylistHeader {
         }
 
         headerTitle.setOnClickListener(v -> {
+            if (adapter != null && adapter.isSelectionMode()) {
+                return;
+            }
             Playlist targetPlaylist = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
             if (targetPlaylist != null) {
                 new PlaylistMenuChain(activity).beginRenamePlaylistChain(targetPlaylist, () -> {

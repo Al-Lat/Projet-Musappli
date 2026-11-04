@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@drawable/dialog_background"
+    android:background="@drawable/background_reversed_primary_border"
     android:paddingHorizontal="8dp"
     android:paddingTop="8dp"
     >
@@ -42,7 +42,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="8dp"
         android:gravity="center"
         >
 

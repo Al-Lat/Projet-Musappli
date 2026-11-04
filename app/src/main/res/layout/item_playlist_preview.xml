@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="15dp"
     app:cardElevation="4dp">
 
     <LinearLayout
@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="8dp"
-        android:background="?attr/colorPrimary"
+        android:background="@drawable/background_standard_no_border"
 
 
         >
@@ -28,7 +28,7 @@
             android:textStyle="bold"
             android:text="Playlist Title"
             android:textColor="?attr/textFillColor"
-            android:background="?attr/colorPrimary"
+            android:background="@color/transparent"
             />
 
 
@@ -41,7 +41,7 @@
             android:paddingEnd="16dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:background="?attr/colorPrimary"
+            android:background="@color/transparent"
             >
 
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Crée le: 01/01/2023"
                 android:textColor="?attr/textFillColor"
-                android:background="?attr/colorPrimary"
+                android:background="@color/transparent"
                 />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:text="Nombre de morceaux : 1000"
                 android:textColor="?attr/textFillColor"
-                android:background="?attr/colorPrimary"
+                android:background="@color/transparent"
                 />
 
         </LinearLayout>

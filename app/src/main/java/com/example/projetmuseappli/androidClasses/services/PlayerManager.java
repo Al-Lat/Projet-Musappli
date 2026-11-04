@@ -232,6 +232,17 @@ public class PlayerManager {
     }
 
     /**
+     * Indique si un son est actuellement chargé (qu'il soit en cours de lecture ou en pause).
+     *
+     * @return {@code true} si un son est actif/chargé dans le lecteur, {@code false} sinon.
+     */
+    public boolean hasSongLoaded() {
+        return mediaController != null
+                && mediaController.getCurrentMediaItem() != null
+                && mediaController.getPlaybackState() != Player.STATE_IDLE;
+    }
+
+    /**
      * Retourne la position courante du morceau en cours en millisecondes.
      *
      * @return La position en millisecondes.
@@ -298,6 +309,7 @@ public class PlayerManager {
             controllerFuture.addListener(() -> {
                 if (mediaController != null) {
                     mediaController.addListener(listener);
+                    listener.onPlaybackStateChanged(mediaController.getPlaybackState());
                 }
             }, ContextCompat.getMainExecutor(context));
         }

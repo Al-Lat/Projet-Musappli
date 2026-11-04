@@ -3,16 +3,22 @@
     <!--Couleurs universels-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--Couleurs spéciales-->
+    <color name="greenSucces">#00FF00</color>
     <color name="redWarning">#FF0000</color>
     <color name="transparent">#00000000</color>
 
-    <!--Theme Sombre-->
-    <color name="dark_background">#2E156B</color>
-    <color name="dark_elements">#9636A9</color>
-    <color name="dark_contrast">#DEC954</color>
-
-    <!--Theme Clair-->
-    <color name="light_background">#F5AE5C</color>
-    <color name="light_elements">#FFFFFF</color>
-    <color name="light_contrast">#F5AE5C</color>
+    <!--Couleurs de themes-->
+    <color name="dark_purple">#180745</color>
+    <color name="light_purple">#9636A9</color>
+    <color name="ocean_blue">#0458C8</color>
+    <color name="yellow">#DEC954</color>
+    <color name="light_orange">#F5AE5C</color>
+    <color name="highlight_orange">#D7B24F</color>
+    <color name="crimson_red">#3E0202</color>
+    <color name="mars_orange">#FD4501</color>
+    <color name="light_grey">#D5D5D5</color>
+    <color name="pale_blue">#4FC3F7</color>
+    <color name="highlight_blue">#0490F8</color>
 </resources>

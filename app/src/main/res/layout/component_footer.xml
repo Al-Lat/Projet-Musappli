@@ -6,96 +6,110 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="?attr/colorOnBackground"
-    android:paddingHorizontal="15dp"
+    android:paddingHorizontal="0dp"
     android:paddingVertical="8dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:visibility="gone">
 
     <!-- Ligne de séparation avec le corps de la vue -->
     <View
         android:id="@+id/footerDivider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginBottom="8dp"
-        android:background="?attr/textFillColor"
-        android:alpha="0.3" />
+        android:background="@drawable/background_standard_no_border" />
 
-    <!-- Playback SeekBar -->
-    <SeekBar
-        android:id="@+id/playbackSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="100"
-        android:paddingHorizontal="8dp"
-        android:progress="0"
-        android:progressTint="?attr/textFillColor"
-        android:thumbTint="?attr/textFillColor"
-        android:progressBackgroundTint="?attr/textFillColor" />
-
-    <!-- Button bar -->
+    <!-- Conteneur sous le divider avec un padding horizontal de 15dp -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="4dp">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="15dp">
 
-        <!-- Previous Song Button -->
-        <ImageButton
-            android:id="@+id/previousButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_skip_previous"
-            android:background="@drawable/menu_add_button"
-            app:tint="?attr/textFillColor"
-            android:visibility="gone"
-            android:contentDescription="@string/previous_song_button_text" />
 
-        <!-- Play/Pause Button -->
-        <ImageButton
-            android:id="@+id/playPauseButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_play"
-            android:background="@drawable/menu_add_button"
-            app:tint="?attr/textFillColor"
-            android:contentDescription="@string/play_pause_button_text" />
-
-        <!-- Next Song Button -->
-        <ImageButton
-            android:id="@+id/nextButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="4dp"
-            android:src="@drawable/ic_skip_next"
-            android:background="@drawable/menu_add_button"
-            app:tint="?attr/textFillColor"
-            android:visibility="gone"
-            android:contentDescription="@string/next_song_button_text" />
+        <!-- Playback SeekBar -->
+        <SeekBar
+            android:id="@+id/playbackSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:paddingHorizontal="8dp"
+            android:progress="0"
+            android:progressTint="?attr/colorAccent"
+            android:thumbTint="?attr/textFillColor"
+            android:progressBackgroundTint="?attr/textFillColor" />
 
         <!-- Playback Time Text -->
         <TextView
             android:id="@+id/playbackTimeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="0dp"
+            android:paddingVertical="2dp"
             android:textColor="?attr/textFillColor"
             android:textSize="13sp"
             android:singleLine="true"
             android:text="@string/default_time_format" />
 
-        <!-- Current song title -->
-        <TextView
-            android:id="@+id/currentSongTitle"
-            android:layout_width="0dp"
+        <!-- Button bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="12dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="?attr/textFillColor"
-            android:textSize="13sp"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="4dp">
+
+            <!-- Previous Song Button -->
+            <ImageButton
+                android:id="@+id/previousButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="25dp"
+                android:src="@drawable/ic_skip_previous"
+                android:background="@drawable/background_menu_button"
+                app:tint="?attr/textFillColor"
+                android:visibility="invisible"
+                android:contentDescription="@string/previous_song_button_text" />
+
+            <!-- Play/Pause Button -->
+            <ImageButton
+                android:id="@+id/playPauseButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_play"
+                android:background="@drawable/background_menu_button"
+                app:tint="?attr/textFillColor"
+                android:contentDescription="@string/play_pause_button_text" />
+
+            <!-- Next Song Button -->
+            <ImageButton
+                android:id="@+id/nextButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="25dp"
+                android:src="@drawable/ic_skip_next"
+                android:background="@drawable/background_menu_button"
+                app:tint="?attr/textFillColor"
+                android:visibility="invisible"
+                android:contentDescription="@string/next_song_button_text" />
+
+
+
+            <!-- Current song title -->
+            <TextView
+                android:id="@+id/currentSongTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="12dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="?attr/textFillColor"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

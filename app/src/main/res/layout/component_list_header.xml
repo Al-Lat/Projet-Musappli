@@ -6,8 +6,8 @@
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="0dp"
     android:paddingVertical="15dp"
+    android:layout_marginBottom="0dp"
     android:orientation="horizontal"
 
     android:background="?attr/colorPrimary"
@@ -21,7 +21,7 @@
         android:layout_marginHorizontal="3dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@drawable/standard_background_no_border"
+        android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_back"
         android:textColor="?attr/textFillColor" />
@@ -65,7 +65,7 @@
         android:layout_marginHorizontal="3dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@drawable/standard_background_no_border"
+        android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_search"
         android:visibility="visible"/>
@@ -79,7 +79,7 @@
         android:layout_marginHorizontal="3dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@drawable/standard_background_no_border"
+        android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_close"
         android:visibility="gone" />

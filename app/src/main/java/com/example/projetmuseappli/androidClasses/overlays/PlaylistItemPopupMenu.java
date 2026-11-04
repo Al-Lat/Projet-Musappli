@@ -63,26 +63,34 @@ public class PlaylistItemPopupMenu {
         PopupMenu pop = new PopupMenu(context, view);
         pop.getMenuInflater().inflate(R.menu.context_menu_playlist, pop.getMenu());
 
+        if (playlistsToProcess.size() > 1) {
+            pop.getMenu().findItem(R.id.action_rename_playlist).setVisible(false);
+        }
+
         pop.setOnMenuItemClickListener((menuItem) -> {
             int itemId = menuItem.getItemId();
 
             if (itemId == R.id.action_delete_playlist) {
-                for (Playlist playlist : playlistsToProcess) {
-                    Masterlist.getInstance().removePlaylist(playlist);
-                }
-                if (adapter != null) {
-                    adapter.clearSelection();
-                    adapter.notifyDataSetChanged();
-                }
-                return true;
-            } else if (itemId == R.id.action_rename_playlist) {
-                Playlist target = playlistsToProcess.get(0);
-                new PlaylistMenuChain(context).beginRenamePlaylistChain(target, () -> {
+                ConfirmationDialogHelper.showDeleteConfirmationDialog(context, () -> {
+                    for (Playlist playlist : playlistsToProcess) {
+                        Masterlist.getInstance().removePlaylist(playlist);
+                    }
                     if (adapter != null) {
                         adapter.clearSelection();
                         adapter.notifyDataSetChanged();
                     }
                 });
+                return true;
+            } else if (itemId == R.id.action_rename_playlist) {
+                if (playlistsToProcess.size() == 1) {
+                    Playlist target = playlistsToProcess.get(0);
+                    new PlaylistMenuChain(context).beginRenamePlaylistChain(target, () -> {
+                        if (adapter != null) {
+                            adapter.clearSelection();
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
                 return true;
             } else if (itemId == R.id.action_play_playlist) {
                 Toast.makeText(context, context.getString(R.string.FEATURE_TODO), Toast.LENGTH_SHORT).show();

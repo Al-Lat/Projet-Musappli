@@ -1,21 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.ProjetMuseappli" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/light_elements</item>
-        <item name="colorOnBackground">@color/light_background</item>
+        <!-- Main Colors-->
+        <item name="colorPrimary">@color/light_orange</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="android:itemBackground">@color/white</item>
+
+        <!--Accent Colors-->
+        <item name="colorAccent">@color/mars_orange</item>
+        <item name="cardItemBorderColor">@color/black</item>
+        <item name="highlightingColor">@color/highlight_orange</item>
+
+
+        <!--TextColors-->
         <item name="textFillColor">@color/black</item>
-<!--        <item name="android:background">@color/light_background</item>-->
-        <item name="android:text">@color/black</item>
-        <item name="colorAccent">@color/light_contrast</item>
-
         <item name="textInputFilledStyle">@color/white</item>
-
-        <item name="android:itemBackground">@color/light_elements</item>
+        <item name="android:text">@color/black</item>
         <item name="android:itemTextAppearance">@color/black</item>
+<!--        <item name="android:background">@color/light_background</item>-->
+        
 
     </style>
 
+    <!--Theme vide ciblé par les composants, le parent est soit le theme clair soit le theme sombre -->
     <style name="Theme.ProjetMuseappli" parent="Base.Theme.ProjetMuseappli" />
 
 

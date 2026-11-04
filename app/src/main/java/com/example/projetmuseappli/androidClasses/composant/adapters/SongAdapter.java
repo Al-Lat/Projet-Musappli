@@ -203,7 +203,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
         holder.itemView.setSelected(isSelected);
         holder.itemView.setActivated(isSelected);
-        holder.itemView.setAlpha(isSelected ? 0.5f : 1.0f);
+        applySelectionFilter(holder.containerLayout, isSelected);
 
         /*Gestion des actions*/
         holder.itemView.setOnClickListener(v -> {
@@ -282,6 +282,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         TextView textViewExtension;
         TextView textViewDate;
         View buttonBurger;
+        View containerLayout;
 
         /**
          * Constructeur du ViewHolder effectuant la liaison avec les vues du layout.
@@ -294,6 +295,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
             textViewExtension = itemView.findViewById(R.id.textViewExtension);
             textViewDate = itemView.findViewById(R.id.textViewDate);
             buttonBurger = itemView.findViewById(R.id.buttonBurger);
+            if (itemView instanceof ViewGroup && ((ViewGroup) itemView).getChildCount() > 0) {
+                containerLayout = ((ViewGroup) itemView).getChildAt(0);
+            } else {
+                containerLayout = itemView;
+            }
         }
 
     }

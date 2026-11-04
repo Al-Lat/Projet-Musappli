@@ -1,6 +1,12 @@
 package com.example.projetmuseappli.androidClasses.composant.adapters;
 
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
+
+import com.example.projetmuseappli.R;
 
 import java.util.Set;
 
@@ -43,5 +49,27 @@ public interface MultiSelectAdapterInterface<T> extends MediaRecyclerViewAdapter
      * @param fab La vue du bouton flottant.
      */
     void setFloatingActionButton(View fab);
+
+    /**
+     * Applique ou retire le filtre de couleur de sélection (?attr/highlightingColor) sur le conteneur de l'item.
+     *
+     * @param containerView La vue conteneur de l'item dont le fond doit être teinté.
+     * @param isSelected {@code true} si l'élément est sélectionné, {@code false} sinon.
+     */
+    default void applySelectionFilter(View containerView, boolean isSelected) {
+        if (containerView == null || getContext() == null) return;
+
+        Drawable bg = containerView.getBackground();
+        if (bg == null) return;
+
+        if (isSelected) {
+            TypedValue typedValue = new TypedValue();
+            getContext().getTheme().resolveAttribute(R.attr.highlightingColor, typedValue, true);
+            int highlightColor = typedValue.data;
+            bg.setColorFilter(new PorterDuffColorFilter(highlightColor, PorterDuff.Mode.SRC_ATOP));
+        } else {
+            bg.clearColorFilter();
+        }
+    }
 
 }

@@ -200,7 +200,7 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
 
         holder.itemView.setSelected(isSelected);
         holder.itemView.setActivated(isSelected);
-        holder.itemView.setAlpha(isSelected ? 0.5f : 1.0f);
+        applySelectionFilter(holder.containerLayout, isSelected);
 
         /*gestion des actions*/
         holder.itemView.setOnClickListener(view -> {
@@ -244,6 +244,7 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
         private TextView date;
         private TextView size;
         private ImageButton burgerButton;
+        private View containerLayout;
 
         /**
          * Constructeur du ViewHolder effectuant la liaison avec les vues du layout.
@@ -256,6 +257,11 @@ public class PlaylistAdapter extends PlaylistAdapterAbstract<PlaylistAdapter.Pla
             size = itemView.findViewById(R.id.playlistSize);
             date = itemView.findViewById(R.id.playlistDate);
             burgerButton = itemView.findViewById(R.id.buttonBurgerPlaylist);
+            if (itemView instanceof ViewGroup && ((ViewGroup) itemView).getChildCount() > 0) {
+                containerLayout = ((ViewGroup) itemView).getChildAt(0);
+            } else {
+                containerLayout = itemView;
+            }
         }
 
     }

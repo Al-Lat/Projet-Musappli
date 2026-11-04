@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.Timeline;
+import androidx.media3.session.MediaController;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
@@ -30,6 +31,7 @@ public class MainFooter {
 
     private final Activity activity;
 
+    private final View footerContainer;
     private final ImageButton boutonPlayPause;
     private final ImageButton previousButton;
     private final ImageButton nextButton;
@@ -43,9 +45,13 @@ public class MainFooter {
 
     private final Player.Listener playerListener = new Player.Listener() {
         @Override
+        public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
+            updateUI();
+        }
+
+        @Override
         public void onIsPlayingChanged(boolean isPlaying) {
-            updatePlayPauseButton(isPlaying);
-            updateNavigationButtons();
+            updateUI();
             if (isPlaying) {
                 startProgressUpdate();
             } else {
@@ -55,15 +61,12 @@ public class MainFooter {
 
         @Override
         public void onMediaItemTransition(MediaItem mediaItem, int reason) {
-            updateSongTitle(mediaItem);
-            updateNavigationButtons();
-            updateProgress();
+            updateUI();
         }
 
         @Override
         public void onPlaybackStateChanged(int playbackState) {
-            updateNavigationButtons();
-            updateProgress();
+            updateUI();
             if (playbackState == Player.STATE_ENDED) {
                 updatePlayPauseButton(false);
                 stopProgressUpdate();
@@ -72,7 +75,7 @@ public class MainFooter {
 
         @Override
         public void onTimelineChanged(@NonNull Timeline timeline, int reason) {
-            updateNavigationButtons();
+            updateUI();
         }
     };
 
@@ -84,6 +87,7 @@ public class MainFooter {
     public MainFooter(Activity activity){
         this.activity = activity;
 
+        footerContainer = activity.findViewById(R.id.importButtonLayout);
         boutonPlayPause = activity.findViewById(R.id.playPauseButton);
         previousButton = activity.findViewById(R.id.previousButton);
         nextButton = activity.findViewById(R.id.nextButton);
@@ -147,14 +151,12 @@ public class MainFooter {
 
     private void updateNavigationButtons() {
         PlayerManager pm = PlayerManager.getInstance(activity);
-        boolean hasPrevious = pm.hasPrevious();
-        boolean hasNext = pm.hasNext();
 
         if (previousButton != null) {
-            previousButton.setVisibility(hasPrevious ? View.VISIBLE : View.GONE);
+            previousButton.setVisibility(pm.hasPrevious() ? View.VISIBLE : View.INVISIBLE);
         }
         if (nextButton != null) {
-            nextButton.setVisibility(hasNext ? View.VISIBLE : View.GONE);
+            nextButton.setVisibility(pm.hasNext() ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -191,7 +193,8 @@ public class MainFooter {
     }
 
     /**
-     * Formate le temps écoulé par rapport au temps total (ex: "01:23 / 03:45" ou "01:23:45 / 10:15:30").
+     * Formate le temps écoulé par rapport au temps total
+     * (ex: "01:23 / 03:45" ou "01:23:45 / 10:15:30").
      * Prévu pour supporter des durées d'au moins 10 heures.
      *
      * @param currentMs Temps écoulé en millisecondes.
@@ -204,7 +207,8 @@ public class MainFooter {
 
         boolean showHours = safeTotalMs >= 3600000L;
 
-        return formatSingleTime(safeCurrentMs, showHours) + " / " + formatSingleTime(safeTotalMs, showHours);
+        return formatSingleTime(safeCurrentMs, showHours)
+                        + " / " + formatSingleTime(safeTotalMs, showHours);
     }
 
     private static String formatSingleTime(long ms, boolean showHours) {
@@ -229,14 +233,22 @@ public class MainFooter {
         updateHandler.removeCallbacks(updateProgressRunnable);
     }
 
+    private void updateFooterVisibility() {
+        if (footerContainer == null) return;
+
+        footerContainer.setVisibility(PlayerManager.getInstance(activity).hasSongLoaded()
+                                                                ? View.VISIBLE : View.GONE);
+    }
+
     private void updateUI() {
         PlayerManager pm = PlayerManager.getInstance(activity);
+        updateFooterVisibility();
         boolean isPlaying = pm.isPlaying();
         updatePlayPauseButton(isPlaying);
         updateNavigationButtons();
         updateProgress();
 
-        if (pm.getMediaController() != null && pm.getMediaController().getCurrentMediaItem() != null) {
+        if (pm.hasSongLoaded()) {
             updateSongTitle(pm.getMediaController().getCurrentMediaItem());
         }
 
