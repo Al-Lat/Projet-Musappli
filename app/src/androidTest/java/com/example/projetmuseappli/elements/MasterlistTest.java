@@ -23,6 +23,7 @@ public class MasterlistTest {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         context.deleteFile("masterlist.ser");
         Masterlist.init(context);
+        Masterlist.getInstance().clear();
     }
 
     @Test
@@ -189,5 +190,49 @@ public class MasterlistTest {
 
         masterlist.removeSong(song);
         assertTrue(masterlist.isEmpty());
+    }
+
+    @Test
+    public void testRemoveSongFromAllPlaylists() {
+        Masterlist masterlist = Masterlist.getInstance();
+        Song song1 = new Song(UUID.randomUUID(), "mp3", "Song To Remove");
+        Song song2 = new Song(UUID.randomUUID(), "flac", "Song To Keep");
+        Song song3 = new Song(UUID.randomUUID(), "ogg", "Solo Song");
+
+        masterlist.addSong(song1);
+        masterlist.addSong(song2);
+        masterlist.addSong(song3);
+
+        // Playlist 1 avec song1 et song2 (taille 2)
+        Playlist playlist1 = new Playlist("Playlist Multi", song1);
+        masterlist.addPlaylist(playlist1);
+        masterlist.addToPlaylist(playlist1, song2);
+
+        // Playlist 2 avec uniquement song3 (taille 1)
+        Playlist playlist2 = new Playlist("Playlist Solo", song3);
+        masterlist.addPlaylist(playlist2);
+
+        // Playlist 3 avec uniquement song1 (taille 1)
+        Playlist playlist3 = new Playlist("Playlist Song1 Solo", song1);
+        masterlist.addPlaylist(playlist3);
+
+        assertEquals(2, playlist1.getSize());
+        assertTrue(playlist1.getSongList().contains(song1));
+
+        // Suppression de song1 de la Masterlist
+        masterlist.removeSong(song1);
+
+        // Vérifications
+        assertNull(masterlist.getSong(song1.getUUID()));
+        assertFalse(playlist1.getSongList().contains(song1));
+        assertEquals(1, playlist1.getSize());
+        assertTrue(playlist1.getSongList().contains(song2));
+
+        // playlist3 ne contenait que song1 -> elle doit être supprimée car elle deviendrait vide
+        assertNull(masterlist.getPlaylist(playlist3.getUuid()));
+
+        // playlist2 ne contenait pas song1 -> inchangée
+        assertNotNull(masterlist.getPlaylist(playlist2.getUuid()));
+        assertEquals(1, playlist2.getSize());
     }
 }

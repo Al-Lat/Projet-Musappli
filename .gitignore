@@ -16,3 +16,5 @@ local.properties
 
 .idea
 .aider*
+/Diagrams/acti.puml
+/Diagrams/v.puml

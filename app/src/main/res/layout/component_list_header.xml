@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    android:id="@+id/header_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="15dp"
-    android:layout_marginBottom="0dp"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="4dp"
     android:orientation="horizontal"
-
-    android:background="?attr/colorPrimary"
-    >
+    android:gravity="center_vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="?attr/colorPrimary">
 
     <ImageButton
         android:id="@+id/header_back"
         android:paddingVertical="5dp"
         android:layout_width="0dp"
-        android:layout_weight="0.2"
-        android:layout_marginHorizontal="3dp"
-        android:layout_height="match_parent"
+        android:layout_weight="0.15"
+        android:layout_marginHorizontal="2dp"
+        android:layout_height="40dp"
         android:layout_gravity="center"
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_back"
         android:textColor="?attr/textFillColor" />
 
-    <!-- Mode normal : titre de la playlist -->
+    <!-- Mode normal : titre de la playlist ou vue -->
     <TextView
         android:id="@+id/header_title"
         android:layout_width="0dp"
-        android:layout_weight="0.6"
-        android:layout_height="match_parent"
+        android:layout_weight="0.55"
+        android:layout_height="40dp"
         android:layout_marginHorizontal="3dp"
         android:gravity="center_vertical"
         android:ellipsize="end"
@@ -42,18 +42,19 @@
         android:textStyle="bold"
         android:visibility="visible"/>
 
-    <!-- Mode recherche : champ de saisie (même poids que le titre) -->
+    <!-- Mode recherche : champ de saisie -->
     <EditText
         android:id="@+id/header_search_input"
         android:layout_width="0dp"
-        android:layout_weight="0.6"
-        android:layout_height="match_parent"
+        android:layout_weight="0.55"
+        android:layout_height="40dp"
         android:layout_marginHorizontal="3dp"
-        android:hint="Rechercher"
+        android:hint="@string/action_search"
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:maxLines="1"
         android:textColor="?attr/textFillColor"
+        android:textColorHint="?attr/textFillColor"
         android:visibility="gone" />
 
     <!-- Mode normal : ouvrir la recherche -->
@@ -61,27 +62,42 @@
         android:id="@+id/header_search"
         android:paddingVertical="5dp"
         android:layout_width="0dp"
-        android:layout_weight="0.2"
-        android:layout_marginHorizontal="3dp"
-        android:layout_height="match_parent"
+        android:layout_weight="0.15"
+        android:layout_marginHorizontal="2dp"
+        android:layout_height="40dp"
         android:layout_gravity="center"
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_search"
         android:visibility="visible"/>
 
-    <!-- Mode recherche : effacer le texte (même poids que la loupe) -->
+    <!-- Mode recherche : effacer le texte -->
     <ImageButton
         android:id="@+id/header_clear"
         android:paddingVertical="5dp"
         android:layout_width="0dp"
-        android:layout_weight="0.2"
-        android:layout_marginHorizontal="3dp"
-        android:layout_height="match_parent"
+        android:layout_weight="0.15"
+        android:layout_marginHorizontal="2dp"
+        android:layout_height="40dp"
         android:layout_gravity="center"
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_close"
+        android:visibility="gone" />
+
+    <!-- Mode tri : afficher le menu de tri -->
+    <ImageButton
+        android:id="@+id/header_sort"
+        android:paddingVertical="5dp"
+        android:layout_width="0dp"
+        android:layout_weight="0.15"
+        android:layout_marginHorizontal="2dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:background="@drawable/background_standard_no_border"
+        app:backgroundTint="@null"
+        android:src="@drawable/ic_sort"
+        android:contentDescription="@string/action_sort"
         android:visibility="gone" />
 
 </LinearLayout>

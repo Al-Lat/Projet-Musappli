@@ -221,9 +221,13 @@ public class Masterlist implements Serializable {
      * @param uuid L'identifiant {@link UUID} du morceau à supprimer.
      */
     public void removeSong(@NonNull UUID uuid){
-        masterlistSongHashMap.remove(uuid);
-        this.save();
-        this.notifyListeners();
+        Song song = getSong(uuid);
+        if (song != null) {
+            removeSongFromAllPlaylists(song);
+            masterlistSongHashMap.remove(uuid);
+            this.save();
+            this.notifyListeners();
+        }
     }
 
     /**
@@ -351,6 +355,16 @@ public class Masterlist implements Serializable {
         return masterlistSongHashMap.isEmpty();
     }
 
+    /**
+     * Réinitialise la Masterlist en supprimant tous les morceaux et toutes les playlists.
+     */
+    public void clear() {
+        masterlistSongHashMap.clear();
+        masterlistPlaylistHashMap.clear();
+        this.save();
+        this.notifyListeners();
+    }
+
     /*convertit les listes/hashmaps attributs de la classe null en listes vides*/
     private void fixNullLists(){
         if (this.masterlistSongHashMap == null ){
@@ -358,6 +372,23 @@ public class Masterlist implements Serializable {
         }
         if (this.masterlistPlaylistHashMap == null ){
             this.masterlistPlaylistHashMap = new LinkedHashMap<>();
+        }
+    }
+
+    /*Supprime un son de toute les playlists de l'application*/
+    private void removeSongFromAllPlaylists(@NonNull Song song) {
+        List<Playlist> playlistsToRemove = new LinkedList<>();
+        for (Playlist playlist : masterlistPlaylistHashMap.values()) {
+            if (playlist.getSongList().contains(song)) {
+                if (playlist.getSize() <= 1) {
+                    playlistsToRemove.add(playlist);
+                } else {
+                    playlist.removeSong(song);
+                }
+            }
+        }
+        for (Playlist playlist : playlistsToRemove) {
+            removePlaylist(playlist);
         }
     }
 

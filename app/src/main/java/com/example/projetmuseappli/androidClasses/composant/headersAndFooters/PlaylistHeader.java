@@ -1,21 +1,16 @@
 package com.example.projetmuseappli.androidClasses.composant.headersAndFooters;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
-
 import android.app.Activity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
+import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
 import com.example.projetmuseappli.androidClasses.overlays.PlaylistMenuChain;
+import com.example.projetmuseappli.androidClasses.overlays.SongSortPopupMenu;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;
@@ -25,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Composant représentant l'en-tête spécifique d'une vue de playlist avec gestion du titre et de la recherche.
+ * Composant représentant l'en-tête spécifique d'une vue de playlist avec gestion du titre, de la recherche et du tri.
  */
 public class PlaylistHeader {
 
@@ -38,13 +33,10 @@ public class PlaylistHeader {
     private UUID uuidOfPlaylist;
     private Playlist playlist;
 
-    /*Indique si l'on doit afficher la barre de recherche ou non*/
-    private boolean searchMode = false;
+    private HeaderSearchHelper searchHelper;
 
-    private ImageButton headerSearch;
-    private ImageButton headerClear;
-    private TextView headerTitle;
-    private EditText searchInput;
+    private String currentQuery = "";
+    private SortMode currentSortMode = SortMode.DATE_DESC;
 
     public void setPlaylistAdapter(SongAdapter adapter) {
         this.adapter = adapter;
@@ -95,89 +87,71 @@ public class PlaylistHeader {
     }
 
     private void setup() {
-
-        ImageButton headerBack = activity.findViewById(R.id.header_back);
-        this.headerSearch = activity.findViewById(R.id.header_search);
-        this.headerClear  = activity.findViewById(R.id.header_clear);
-        this.headerTitle  = activity.findViewById(R.id.header_title);
-        this.searchInput  = activity.findViewById(R.id.header_search_input);
+        View decorView = activity.getWindow().getDecorView();
+        searchHelper = new HeaderSearchHelper(decorView, activity, this::filterSongs);
+        searchHelper.setOnClearEmptyListener(() -> searchHelper.setSearchMode(false));
 
         Playlist p = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
-        if (p != null) {
-            headerTitle.setText(p.getName());
+        if (p != null && searchHelper.getHeaderTitle() != null) {
+            searchHelper.getHeaderTitle().setText(p.getName());
         }
 
-        headerTitle.setOnClickListener(v -> {
-            if (adapter != null && adapter.isSelectionMode()) {
-                return;
-            }
-            Playlist targetPlaylist = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
-            if (targetPlaylist != null) {
-                new PlaylistMenuChain(activity).beginRenamePlaylistChain(targetPlaylist, () -> {
-                    headerTitle.setText(targetPlaylist.getName());
-                });
-            }
-        });
-
-        headerBack.setOnClickListener(v -> {
-            if (searchMode) {
-                setSearchMode(false);
-            } else {
-                if (activity instanceof AppCompatActivity) {
-                    ((AppCompatActivity) activity).getOnBackPressedDispatcher().onBackPressed();
-                } else {
-                    activity.finish();
+        if (searchHelper.getHeaderTitle() != null) {
+            searchHelper.getHeaderTitle().setOnClickListener(v -> {
+                if (adapter != null && adapter.isSelectionMode()) {
+                    return;
                 }
-            }
-        });
+                Playlist targetPlaylist = uuidOfPlaylist != null ? Masterlist.getInstance().getPlaylist(uuidOfPlaylist) : playlist;
+                if (targetPlaylist != null) {
+                    new PlaylistMenuChain(activity).beginRenamePlaylistChain(targetPlaylist, () -> {
+                        searchHelper.getHeaderTitle().setText(targetPlaylist.getName());
+                    });
+                }
+            });
+        }
 
-        headerClear.setOnClickListener(v -> clearTextInput());
+        if (searchHelper.getHeaderBack() != null) {
+            searchHelper.getHeaderBack().setVisibility(View.VISIBLE);
+            searchHelper.getHeaderBack().setOnClickListener(v -> {
+                if (searchHelper.isSearchMode()) {
+                    searchHelper.setSearchMode(false);
+                } else {
+                    if (activity instanceof AppCompatActivity) {
+                        ((AppCompatActivity) activity).getOnBackPressedDispatcher().onBackPressed();
+                    } else {
+                        activity.finish();
+                    }
+                }
+            });
+        }
 
-        headerSearch.setOnClickListener(v -> setSearchMode(true));
-
-        searchInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterSongs(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-    }
-
-    private void setSearchMode(boolean enabled) {
-        searchMode = enabled;
-
-        if (enabled) {
-            headerTitle.setVisibility(View.GONE);
-            headerSearch.setVisibility(View.GONE);
-            searchInput.setVisibility(View.VISIBLE);
-            headerClear.setVisibility(View.VISIBLE);
-
-            clearTextInput();
-
-            searchInput.requestFocus();
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
-            }
-        } else {
-            headerTitle.setVisibility(View.VISIBLE);
-            headerSearch.setVisibility(View.VISIBLE);
-            searchInput.setVisibility(View.GONE);
-            headerClear.setVisibility(View.GONE);
-
-            clearTextInput();
-            hideKeyboard();
+        // Bouton de tri
+        ImageButton headerSort = decorView.findViewById(R.id.header_sort);
+        if (headerSort != null) {
+            headerSort.setVisibility(View.VISIBLE);
+            headerSort.setOnClickListener(v -> SongSortPopupMenu.showSortPopup(v, this::setSortMode));
         }
     }
 
-    private void clearTextInput(){
-        searchInput.setText("");
+    /**
+     * Définit le mode de tri actif et met à jour la liste affichée.
+     *
+     * @param sortMode Le nouveau mode de tri.
+     */
+    public void setSortMode(SortMode sortMode) {
+        if (sortMode != null) {
+            this.currentSortMode = sortMode;
+            filterAndSort();
+        }
+    }
+
+    /**
+     * Retourne le mode de tri actuel.
+     *
+     * @return Le mode de tri {@link SortMode}.
+     */
+    public SortMode getCurrentSortMode() {
+        return currentSortMode;
     }
 
     private List<Song> getOriginalSongList() {
@@ -193,33 +167,57 @@ public class PlaylistHeader {
         return new ArrayList<>();
     }
 
+    /**
+     * Filtre les morceaux par requête textuelle.
+     *
+     * @param query La requête de recherche.
+     */
     public void filterSongs(String query) {
+        this.currentQuery = query != null ? query : "";
+        filterAndSort();
+    }
+
+    /**
+     * Applique le filtrage textuel et le tri sélectionné sur la liste des morceaux.
+     */
+    public void filterAndSort() {
         if (adapter == null) {
             return;
         }
 
         List<Song> originalList = getOriginalSongList();
-
-        if (query == null || query.isEmpty()) {
-            adapter.setItems(new ArrayList<>(originalList));
-            return;
-        }
-
-        String lowerQuery = query.toLowerCase();
         List<Song> filteredList = new ArrayList<>();
-        for (Song song : originalList) {
-            if (song != null && song.getTitre() != null && song.getTitre().toLowerCase().contains(lowerQuery)) {
-                filteredList.add(song);
+
+        // 1. Filtrage textuel par titre
+        if (currentQuery == null || currentQuery.trim().isEmpty()) {
+            filteredList.addAll(originalList);
+        } else {
+            String lowerQuery = currentQuery.toLowerCase();
+            for (Song song : originalList) {
+                if (song != null && song.getTitre() != null && song.getTitre().toLowerCase().contains(lowerQuery)) {
+                    filteredList.add(song);
+                }
             }
         }
-        adapter.setItems(filteredList);
-    }
 
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+        // 2. Application du tri
+        switch (currentSortMode) {
+            case DATE_ASC:
+                filteredList.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
+                break;
+            case NAME_ASC:
+                filteredList.sort((s1, s2) -> s1.getTitre().compareToIgnoreCase(s2.getTitre()));
+                break;
+            case NAME_DESC:
+                filteredList.sort((s1, s2) -> s2.getTitre().compareToIgnoreCase(s1.getTitre()));
+                break;
+            case DATE_DESC:
+            default:
+                filteredList.sort((s1, s2) -> s2.getDate().compareTo(s1.getDate()));
+                break;
         }
+
+        adapter.setItems(filteredList);
     }
 
 }

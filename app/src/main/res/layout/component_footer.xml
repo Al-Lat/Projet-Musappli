@@ -27,6 +27,19 @@
         android:gravity="center"
         android:paddingHorizontal="15dp">
 
+        <!-- Current song title -->
+        <TextView
+            android:id="@+id/currentSongTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="12dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="?attr/textFillColor"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
 
         <!-- Playback SeekBar -->
         <SeekBar
@@ -96,18 +109,7 @@
 
 
 
-            <!-- Current song title -->
-            <TextView
-                android:id="@+id/currentSongTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="12dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textColor="?attr/textFillColor"
-                android:textSize="13sp"
-                android:visibility="gone" />
+
 
         </LinearLayout>
 

@@ -9,6 +9,8 @@ import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.elements.Masterlist;
@@ -20,26 +22,48 @@ import java.util.List;
  */
 public class ImportHelper {
 
-    private ActivityResultLauncher<String[]> launcher;
+    private final ActivityResultLauncher<String[]> launcher;
 
     /**
      * Encapsule un sélecteur de documents multiples.
-     * Doit être instanciée lors de la création de l'activité hôte.
+     * Doit être instanciée lors de la création de l'activité ou du fragment hôte.
      *
-     * @param caller L'activité ou le composant initiant la demande.
+     * @param caller L'activité ou le fragment initiant la demande.
      */
     public ImportHelper(@NonNull ActivityResultCaller caller) {
         this.launcher = caller.registerForActivityResult(
                 new ActivityResultContracts.OpenMultipleDocuments(),
                 uriList -> {
                     if (uriList != null && !uriList.isEmpty()) {
-                        /*passe l'import que si caller est une activity encore en cours*/
-                        if (caller instanceof Activity && !((Activity) caller).isFinishing()) {
-                            importSong((Context) caller,uriList);
+                        Context context = getContextFromCaller(caller);
+                        if (context != null) {
+                            importSong(context, uriList);
                         }
                     }
                 }
         );
+    }
+
+    /**
+     * Récupère le contexte valide à partir du caller (Activity ou Fragment) si celui-ci est encore actif.
+     *
+     * @param caller Le composant ayant initié le sélecteur.
+     * @return Le contexte Android, ou null si le composant est terminé/détaché.
+     */
+    @Nullable
+    public static Context getContextFromCaller(@NonNull ActivityResultCaller caller) {
+        if (caller instanceof Activity) {
+            Activity activity = (Activity) caller;
+            if (!activity.isFinishing()) {
+                return activity;
+            }
+        } else if (caller instanceof Fragment) {
+            Fragment fragment = (Fragment) caller;
+            if (fragment.isAdded() && fragment.getActivity() != null && !fragment.getActivity().isFinishing()) {
+                return fragment.getContext();
+            }
+        }
+        return null;
     }
 
     /**

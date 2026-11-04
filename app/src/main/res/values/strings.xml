@@ -57,6 +57,14 @@
     <string name="ask_rename_playlist_name">Nouveau nom de la playlist :</string>
     <string name="ask_new_playlist_name_placeholder_text">Titre</string>
 
+    <!-- Options de tri -->
+    <string name="sort_date_desc">Date d\'ajout (plus récent au plus ancien)</string>
+    <string name="sort_date_asc">Date d\'ajout (plus ancien au plus récent)</string>
+    <string name="sort_name_asc">Nom (A à Z)</string>
+    <string name="sort_name_desc">Nom (Z à A)</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_sort">Trier</string>
+
     <!-- Autres-->
     <string name="FEATURE_TODO">Fonctionalité pas encore ajouté</string>
     <string name="ERROR_MESSAGE_PREVIEW">Apercu d\'un message d\'erreur</string>
