@@ -166,4 +166,148 @@ public class PlaylistTest {
         assertEquals("Song Beta", sortedList.get(1).getTitre());
         assertEquals("Song Gamma", sortedList.get(2).getTitre());
     }
+
+    @Test
+    public void testGetSongListReturnsDefensiveCopy() {
+        Playlist playlist = new Playlist("Defensive Copy Test", song1);
+        playlist.addSong(song2);
+
+        List<Song> copy = playlist.getSongList();
+        assertEquals(2, copy.size());
+
+        // La modification de la copie retournée ne doit pas affecter la playlist interne
+        copy.remove(0);
+        assertEquals(1, copy.size());
+        assertEquals(2, playlist.getSize());
+        assertTrue(playlist.containsSong(song1));
+    }
+
+    @Test
+    public void testGetSongByIndex() {
+        Playlist playlist = new Playlist("Get Song Test", song1);
+        playlist.addSong(song2);
+
+        assertEquals(song1, playlist.getSong(0));
+        assertEquals(song2, playlist.getSong(1));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetSongOutOfBounds() {
+        Playlist playlist = new Playlist("OutOfBounds Test", song1);
+        playlist.getSong(5);
+    }
+
+    @Test
+    public void testContainsSong() {
+        Playlist playlist = new Playlist("Contains Test", song1);
+
+        assertTrue(playlist.containsSong(song1));
+        assertFalse(playlist.containsSong(song2));
+        assertFalse(playlist.containsSong(null));
+    }
+
+    @Test
+    public void testMoveSongSuccess() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song1);
+        songs.add(song2);
+        songs.add(song3);
+
+        Playlist playlist = new Playlist("Move Test", songs);
+
+        // Déplacer song1 de l'index 0 à l'index 2
+        playlist.moveSong(0, 2);
+
+        assertEquals(song2, playlist.getSong(0));
+        assertEquals(song3, playlist.getSong(1));
+        assertEquals(song1, playlist.getSong(2));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testMoveSongInvalidFromIndex() {
+        Playlist playlist = new Playlist("Move Invalid", song1);
+        playlist.moveSong(-1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testMoveSongInvalidToIndex() {
+        Playlist playlist = new Playlist("Move Invalid", song1);
+        playlist.moveSong(0, 5);
+    }
+
+    @Test
+    public void testSwapSongsSuccess() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song1);
+        songs.add(song2);
+        songs.add(song3);
+
+        Playlist playlist = new Playlist("Swap Test", songs);
+
+        playlist.swapSongs(0, 2);
+
+        assertEquals(song3, playlist.getSong(0));
+        assertEquals(song2, playlist.getSong(1));
+        assertEquals(song1, playlist.getSong(2));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSwapSongsInvalidIndex() {
+        Playlist playlist = new Playlist("Swap Invalid", song1);
+        playlist.swapSongs(0, 3);
+    }
+
+    @Test
+    public void testRemoveSongByIndexSuccess() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song1);
+        songs.add(song2);
+
+        Playlist playlist = new Playlist("Remove Index Test", songs);
+        Song removed = playlist.removeSong(0);
+
+        assertEquals(song1, removed);
+        assertEquals(1, playlist.getSize());
+        assertEquals(song2, playlist.getSong(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveSongByIndexLastElement() {
+        Playlist playlist = new Playlist("Remove Last Test", song1);
+        playlist.removeSong(0);
+    }
+
+    @Test
+    public void testIndexOf() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song1);
+        songs.add(song2);
+
+        Playlist playlist = new Playlist("IndexOf Test", songs);
+
+        assertEquals(0, playlist.indexOf(song1));
+        assertEquals(1, playlist.indexOf(song2));
+        assertEquals(-1, playlist.indexOf(song3));
+    }
+
+    @Test
+    public void testSetSongListSuccess() {
+        Playlist playlist = new Playlist("SetList Test", song1);
+
+        List<Song> newSongs = new ArrayList<>();
+        newSongs.add(song2);
+        newSongs.add(song3);
+
+        playlist.setSongList(newSongs);
+
+        assertEquals(2, playlist.getSize());
+        assertEquals(song2, playlist.getSong(0));
+        assertEquals(song3, playlist.getSong(1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetSongListEmpty() {
+        Playlist playlist = new Playlist("SetList Empty Test", song1);
+        playlist.setSongList(new ArrayList<>());
+    }
 }

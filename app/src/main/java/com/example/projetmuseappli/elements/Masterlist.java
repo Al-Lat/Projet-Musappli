@@ -272,6 +272,22 @@ public class Masterlist implements Serializable {
     }
 
     /**
+     * Déplace un morceau au sein de la liste d'une playlist et sauvegarde la Masterlist.
+     *
+     * @param playlistUuid L'identifiant UUID de la playlist.
+     * @param fromPosition La position d'origine du morceau.
+     * @param toPosition La nouvelle position du morceau.
+     */
+    public void moveSongInPlaylist(@NonNull UUID playlistUuid, int fromPosition, int toPosition) {
+        Playlist playlist = getPlaylist(playlistUuid);
+        if (playlist != null) {
+            playlist.moveSong(fromPosition, toPosition);
+            save();
+            this.notifyListeners();
+        }
+    }
+
+    /**
      * Ajoute un morceau de musique à une playlist donnée et sauvegarde les modifications.
      *
      * @param playlist La {@link Playlist} cible.
@@ -293,7 +309,7 @@ public class Masterlist implements Serializable {
     public int addToPlaylist(@NonNull Playlist playlist, @NonNull List<Song> songs) {
         int addedCount = 0;
         for (Song song : songs) {
-            if (song != null && !playlist.getSongList().contains(song)) {
+            if (song != null && !playlist.containsSong(song)) {
                 playlist.addSong(song);
                 addedCount++;
             }
@@ -379,7 +395,7 @@ public class Masterlist implements Serializable {
     private void removeSongFromAllPlaylists(@NonNull Song song) {
         List<Playlist> playlistsToRemove = new LinkedList<>();
         for (Playlist playlist : masterlistPlaylistHashMap.values()) {
-            if (playlist.getSongList().contains(song)) {
+            if (playlist.containsSong(song)) {
                 if (playlist.getSize() <= 1) {
                     playlistsToRemove.add(playlist);
                 } else {

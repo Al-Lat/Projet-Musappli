@@ -235,4 +235,28 @@ public class MasterlistTest {
         assertNotNull(masterlist.getPlaylist(playlist2.getUuid()));
         assertEquals(1, playlist2.getSize());
     }
+
+    @Test
+    public void testMoveSongInPlaylist() {
+        Masterlist masterlist = Masterlist.getInstance();
+        Song song1 = new Song(UUID.randomUUID(), "mp3", "Song 1");
+        Song song2 = new Song(UUID.randomUUID(), "flac", "Song 2");
+        Song song3 = new Song(UUID.randomUUID(), "ogg", "Song 3");
+
+        Playlist playlist = new Playlist("Reorder Playlist", song1);
+        masterlist.addPlaylist(playlist);
+        masterlist.addToPlaylist(playlist, song2);
+        masterlist.addToPlaylist(playlist, song3);
+
+        assertEquals(song1, playlist.getSongList().get(0));
+        assertEquals(song2, playlist.getSongList().get(1));
+        assertEquals(song3, playlist.getSongList().get(2));
+
+        // Déplacer song1 de la position 0 à la position 2
+        masterlist.moveSongInPlaylist(playlist.getUuid(), 0, 2);
+
+        assertEquals(song2, playlist.getSongList().get(0));
+        assertEquals(song3, playlist.getSongList().get(1));
+        assertEquals(song1, playlist.getSongList().get(2));
+    }
 }

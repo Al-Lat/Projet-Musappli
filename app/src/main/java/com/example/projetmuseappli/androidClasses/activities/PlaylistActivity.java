@@ -3,7 +3,9 @@ package com.example.projetmuseappli.androidClasses.activities;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +13,7 @@ import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.MainFooter;
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.PlaylistHeader;
+import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
 import com.example.projetmuseappli.androidClasses.overlays.SongItemPopupMenu;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
 import com.example.projetmuseappli.elements.Masterlist;
@@ -59,8 +62,57 @@ public class PlaylistActivity extends AppCompatActivity {
 
         this.header = new PlaylistHeader(this, uuidOfRefPlaylist, adapter);
         this.header.setPlaylistAdapter(adapter);
+        this.header.setOnSortModeChangedListener(newMode -> updateDragAndDropState());
         this.footer = new MainFooter(this);
 
+        setupItemTouchHelper();
+        updateDragAndDropState();
+    }
+
+    private void setupItemTouchHelper() {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return header != null
+                        && header.getCurrentSortMode() == SortMode.CUSTOM
+                        && !header.isSearchActive()
+                        && adapter != null
+                        && !adapter.isSelectionMode();
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getBindingAdapterPosition();
+                int toPosition = target.getBindingAdapterPosition();
+
+                if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION
+                        || fromPosition == toPosition) {
+                    return false;
+                }
+
+                adapter.moveItem(fromPosition, toPosition);
+                Masterlist.getInstance().moveSongInPlaylist(uuidOfRefPlaylist, fromPosition, toPosition);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // Rien à faire pour le swipe
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void updateDragAndDropState() {
+        if (adapter != null && header != null) {
+            boolean isCustomMode = header.getCurrentSortMode() == SortMode.CUSTOM && !header.isSearchActive();
+            adapter.setLongClickSelectionEnabled(!isCustomMode);
+        }
     }
 
     private SongAdapter getNewAdapter(){
@@ -89,6 +141,5 @@ public class PlaylistActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

@@ -20,12 +20,23 @@ public class SongSortPopupMenu {
     }
 
     /**
-     * Affiche le menu contextuel de tri ancré sur la vue spécifiée.
+     * Affiche le menu contextuel de tri ancré sur la vue spécifiée (sans l'option "Personalisé" par défaut).
      *
      * @param anchorView La vue sur laquelle ancrer le menu.
      * @param listener Le callback notifié de l'option choisie.
      */
     public static void showSortPopup(View anchorView, OnSortOptionSelectedListener listener) {
+        showSortPopup(anchorView, false, listener);
+    }
+
+    /**
+     * Affiche le menu contextuel de tri ancré sur la vue spécifiée.
+     *
+     * @param anchorView La vue sur laquelle ancrer le menu.
+     * @param showCustomOption Indique s'il faut afficher l'option de filtre "Personalisé".
+     * @param listener Le callback notifié de l'option choisie.
+     */
+    public static void showSortPopup(View anchorView, boolean showCustomOption, OnSortOptionSelectedListener listener) {
         if (anchorView == null || listener == null) {
             return;
         }
@@ -34,9 +45,16 @@ public class SongSortPopupMenu {
         PopupMenu popup = new PopupMenu(context, anchorView);
         popup.getMenuInflater().inflate(R.menu.menu_sort_options, popup.getMenu());
 
+        if (!showCustomOption) {
+            popup.getMenu().removeItem(R.id.sort_custom);
+        }
+
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.sort_date_desc) {
+            if (itemId == R.id.sort_custom) {
+                listener.onSortOptionSelected(SortMode.CUSTOM);
+                return true;
+            } else if (itemId == R.id.sort_date_desc) {
                 listener.onSortOptionSelected(SortMode.DATE_DESC);
                 return true;
             } else if (itemId == R.id.sort_date_asc) {

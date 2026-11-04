@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -120,12 +121,99 @@ public class Playlist implements Serializable {
     }
 
     /**
-     * Retourne la liste des morceaux contenus dans la playlist.
+     * Retire le morceau situé à l'index spécifié de la playlist.
      *
-     * @return La liste des objets {@link Song}.
+     * @param index L'index du morceau à supprimer.
+     * @return Le morceau {@link Song} supprimé.
+     * @throws IllegalArgumentException si la playlist ne contient qu'un seul élément.
+     * @throws IndexOutOfBoundsException si l'index est hors limites.
+     */
+    public Song removeSong(int index) {
+        if (this.playlist.size() <= 1) {
+            throw new IllegalArgumentException("La playlist ne peut pas être vide");
+        }
+        return this.playlist.remove(index);
+    }
+
+    /**
+     * Déplace un morceau d'une position initiale à une nouvelle position dans la playlist.
+     *
+     * @param fromPosition La position initiale du morceau.
+     * @param toPosition La nouvelle position du morceau.
+     * @throws IndexOutOfBoundsException si fromPosition ou toPosition est invalide.
+     */
+    public void moveSong(int fromPosition, int toPosition) {
+        if (fromPosition < 0 || fromPosition >= playlist.size()
+                || toPosition < 0 || toPosition >= playlist.size()) {
+            throw new IndexOutOfBoundsException("Position invalide lors du déplacement du morceau : "
+                    + fromPosition + " -> " + toPosition);
+        }
+        if (fromPosition == toPosition) {
+            return;
+        }
+        Song moved = playlist.remove(fromPosition);
+        playlist.add(toPosition, moved);
+    }
+
+    /**
+     * Échange la position de deux morceaux dans la playlist.
+     *
+     * @param index1 L'index du premier morceau.
+     * @param index2 L'index du deuxième morceau.
+     * @throws IndexOutOfBoundsException si l'un des index est invalide.
+     */
+    public void swapSongs(int index1, int index2) {
+        if (index1 < 0 || index1 >= playlist.size()
+                || index2 < 0 || index2 >= playlist.size()) {
+            throw new IndexOutOfBoundsException("Index invalide lors de l'échange des morceaux : "
+                    + index1 + ", " + index2);
+        }
+        if (index1 == index2) {
+            return;
+        }
+        Collections.swap(playlist, index1, index2);
+    }
+
+    /**
+     * Récupère le morceau situé à l'index spécifié dans la playlist.
+     *
+     * @param index L'index du morceau recherché.
+     * @return Le morceau {@link Song} situé à cet index.
+     * @throws IndexOutOfBoundsException si l'index est hors limites.
+     */
+    public Song getSong(int index) {
+        return this.playlist.get(index);
+    }
+
+    /**
+     * Vérifie si la playlist contient le morceau spécifié.
+     *
+     * @param song Le morceau {@link Song} à vérifier.
+     * @return {@code true} si le morceau est présent, {@code false} sinon.
+     */
+    public boolean containsSong(Song song) {
+        return song != null && this.playlist.contains(song);
+    }
+
+    /**
+     * Renvoie l'index de la première occurrence du morceau spécifié dans la playlist,
+     * ou -1 si la playlist ne contient pas ce morceau.
+     *
+     * @param song Le morceau à chercher.
+     * @return L'index du morceau ou -1.
+     */
+    public int indexOf(Song song) {
+        return this.playlist.indexOf(song);
+    }
+
+    /**
+     * Retourne une copie défensive de la liste des morceaux contenus dans la playlist.
+     * Les modifications de la liste retournée n'affectent pas la liste interne de la playlist.
+     *
+     * @return Une nouvelle liste (copie) des objets {@link Song}.
      */
     public List<Song> getSongList() {
-        return playlist;
+        return new LinkedList<>(playlist);
     }
 
     /**
@@ -151,6 +239,19 @@ public class Playlist implements Serializable {
      */
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    /**
+     * Remplace la liste des morceaux contenus dans la playlist.
+     *
+     * @param list La nouvelle liste de morceaux.
+     * @throws IllegalArgumentException si la liste spécifiée est nulle ou vide.
+     */
+    public void setSongList(List<Song> list) {
+        if (list == null || list.isEmpty()) {
+            throw new IllegalArgumentException("La liste de morceaux ne peut pas être nulle ou vide");
+        }
+        this.playlist = new LinkedList<>(list);
     }
 
     /**

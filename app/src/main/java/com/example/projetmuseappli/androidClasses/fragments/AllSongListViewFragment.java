@@ -30,6 +30,7 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
      * Enumération des modes de tri disponibles pour la liste de morceaux.
      */
     public enum SortMode {
+        CUSTOM,    // Personnalisé (ordre réel de la liste en mémoire)
         DATE_DESC, // Date d'ajout (plus récent au plus ancien)
         DATE_ASC,  // Date d'ajout (plus ancien au plus récent)
         NAME_ASC,  // Nom (A à Z)

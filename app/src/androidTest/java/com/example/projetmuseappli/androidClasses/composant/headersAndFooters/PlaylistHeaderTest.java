@@ -49,6 +49,9 @@ public class PlaylistHeaderTest {
             scenario.onActivity(activity -> {
                 PlaylistHeader header = new PlaylistHeader(activity, playlist, null);
 
+                // Mode de tri par défaut doit être CUSTOM
+                assertEquals(SortMode.CUSTOM, header.getCurrentSortMode());
+
                 // Tri A -> Z
                 header.setSortMode(SortMode.NAME_ASC);
                 assertEquals(SortMode.NAME_ASC, header.getCurrentSortMode());
@@ -56,6 +59,10 @@ public class PlaylistHeaderTest {
                 // Tri Z -> A
                 header.setSortMode(SortMode.NAME_DESC);
                 assertEquals(SortMode.NAME_DESC, header.getCurrentSortMode());
+
+                // Mode Personalisé
+                header.setSortMode(SortMode.CUSTOM);
+                assertEquals(SortMode.CUSTOM, header.getCurrentSortMode());
             });
         }
     }

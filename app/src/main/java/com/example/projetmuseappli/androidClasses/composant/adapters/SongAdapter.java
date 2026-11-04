@@ -63,6 +63,26 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     private View floatingActionButton;
     private OnBackPressedCallback onBackPressedCallback;
 
+    private boolean longClickSelectionEnabled = true;
+
+    public void setLongClickSelectionEnabled(boolean enabled) {
+        this.longClickSelectionEnabled = enabled;
+    }
+
+    public boolean isLongClickSelectionEnabled() {
+        return longClickSelectionEnabled;
+    }
+
+    public void moveItem(int fromPosition, int toPosition) {
+        if (songList == null || fromPosition < 0 || fromPosition >= songList.size()
+                || toPosition < 0 || toPosition >= songList.size() || fromPosition == toPosition) {
+            return;
+        }
+        Song moved = songList.remove(fromPosition);
+        songList.add(toPosition, moved);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
     /**
      * Construit un adaptateur de morceaux de musique.
      *
@@ -215,8 +235,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         });
 
         holder.itemView.setOnLongClickListener(v -> {
-            toggleSelection(currentSong);
-            return true;
+            if (longClickSelectionEnabled) {
+                toggleSelection(currentSong);
+                return true;
+            }
+            return false;
         });
 
         holder.buttonBurger.setOnClickListener(view -> {

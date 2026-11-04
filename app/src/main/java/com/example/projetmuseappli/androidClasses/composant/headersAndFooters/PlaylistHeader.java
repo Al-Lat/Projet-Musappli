@@ -36,7 +36,20 @@ public class PlaylistHeader {
     private HeaderSearchHelper searchHelper;
 
     private String currentQuery = "";
-    private SortMode currentSortMode = SortMode.DATE_DESC;
+    private SortMode currentSortMode = SortMode.CUSTOM;
+
+    /**
+     * Interface d'écoute pour la modification du mode de tri.
+     */
+    public interface OnSortModeChangedListener {
+        void onSortModeChanged(SortMode newMode);
+    }
+
+    private OnSortModeChangedListener sortModeChangeListener;
+
+    public void setOnSortModeChangedListener(OnSortModeChangedListener listener) {
+        this.sortModeChangeListener = listener;
+    }
 
     public void setPlaylistAdapter(SongAdapter adapter) {
         this.adapter = adapter;
@@ -129,8 +142,18 @@ public class PlaylistHeader {
         ImageButton headerSort = decorView.findViewById(R.id.header_sort);
         if (headerSort != null) {
             headerSort.setVisibility(View.VISIBLE);
-            headerSort.setOnClickListener(v -> SongSortPopupMenu.showSortPopup(v, this::setSortMode));
+            headerSort.setOnClickListener(v -> SongSortPopupMenu.showSortPopup(v, true, this::setSortMode));
         }
+    }
+
+    /**
+     * Indique si une recherche textuelle est actuellement active.
+     *
+     * @return {@code true} si la recherche est active, {@code false} sinon.
+     */
+    public boolean isSearchActive() {
+        return searchHelper != null && searchHelper.isSearchMode()
+                && currentQuery != null && !currentQuery.trim().isEmpty();
     }
 
     /**
@@ -142,6 +165,9 @@ public class PlaylistHeader {
         if (sortMode != null) {
             this.currentSortMode = sortMode;
             filterAndSort();
+            if (sortModeChangeListener != null) {
+                sortModeChangeListener.onSortModeChanged(sortMode);
+            }
         }
     }
 
@@ -175,6 +201,9 @@ public class PlaylistHeader {
     public void filterSongs(String query) {
         this.currentQuery = query != null ? query : "";
         filterAndSort();
+        if (sortModeChangeListener != null) {
+            sortModeChangeListener.onSortModeChanged(currentSortMode);
+        }
     }
 
     /**
@@ -202,6 +231,9 @@ public class PlaylistHeader {
 
         // 2. Application du tri
         switch (currentSortMode) {
+            case CUSTOM:
+                // Conservé dans l'ordre réel de la liste en mémoire (pas de tri)
+                break;
             case DATE_ASC:
                 filteredList.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
                 break;
