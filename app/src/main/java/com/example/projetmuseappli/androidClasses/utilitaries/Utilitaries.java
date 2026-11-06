@@ -21,9 +21,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 /**
  * Classe utilitaire proposant diverses fonctions d'aide pour la gestion des fichiers et des URI.
+ * Constructeur privé : cette classe ne doit pas être instanciée (SonarQube java:S1118).
  */
 public class Utilitaries {
 
@@ -34,7 +38,7 @@ public class Utilitaries {
      * @param uri L'{@link Uri} du fichier.
      * @return Le nom du fichier sous forme de chaîne de caractères, ou {@code null} en cas d'échec.
      */
-    public static String getFileNameFromUri(Context context, Uri uri) {
+    public static String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri) {
         String result = null;
 
         // Si l'URI commence par "content://", c'est le cas général sur Android moderne
@@ -49,7 +53,7 @@ public class Utilitaries {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("Utilitaries", "Erreur lors de la lecture du nom de fichier depuis l'URI", e);
             }
         }
 

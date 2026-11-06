@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
@@ -29,7 +30,7 @@ public class PlaylistItemPopupMenu {
      * @param holder Le ViewHolder auquel est rattachée la playlist.
      * @param currentPlaylist La playlist sélectionnée.
      */
-    public static void showPlaylistItemPopup(View view, RecyclerView.ViewHolder holder, Playlist currentPlaylist) {
+    public static void showPlaylistItemPopup(@NonNull View view, RecyclerView.ViewHolder holder, Playlist currentPlaylist) {
 
         PlaylistAdapter playlistAdapter = null;
         if (holder != null && holder.getBindingAdapter() instanceof PlaylistAdapter) {
@@ -47,15 +48,15 @@ public class PlaylistItemPopupMenu {
      * @param adapter L'adaptateur de playlists.
      * @param selectedPlaylists L'ensemble des playlists sélectionnées.
      */
-    public static void showMultiplePlaylistsItemPopup(View view, PlaylistAdapter adapter, Set<Playlist> selectedPlaylists) {
-        if (selectedPlaylists == null || selectedPlaylists.isEmpty()) {
+    public static void showMultiplePlaylistsItemPopup(@NonNull View view, PlaylistAdapter adapter, @NonNull Set<Playlist> selectedPlaylists) {
+        if (selectedPlaylists.isEmpty()) {
             return;
         }
         displayPopupMenu(view, adapter, new ArrayList<>(selectedPlaylists));
     }
 
-    private static void displayPopupMenu(View view, PlaylistAdapter adapter, List<Playlist> playlistsToProcess) {
-        if (playlistsToProcess == null || playlistsToProcess.isEmpty()) {
+    private static void displayPopupMenu(@NonNull View view, PlaylistAdapter adapter, @NonNull List<Playlist> playlistsToProcess) {
+        if (playlistsToProcess.isEmpty()) {
             return;
         }
 

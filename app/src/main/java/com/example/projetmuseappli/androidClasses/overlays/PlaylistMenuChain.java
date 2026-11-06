@@ -18,6 +18,8 @@ import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;
 
+import androidx.annotation.NonNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class PlaylistMenuChain {
      *
      * @param appContext Le contexte de l'application.
      */
-    public PlaylistMenuChain(Context appContext){
+    public PlaylistMenuChain(@NonNull Context appContext){
         this.appContext = appContext;
     }
 
@@ -71,8 +73,7 @@ public class PlaylistMenuChain {
      * @param playlist La playlist à renommer.
      * @param onRenamed Callback optionnel exécuté après la modification réussie du nom.
      */
-    public void beginRenamePlaylistChain(Playlist playlist, Runnable onRenamed) {
-        if (playlist == null) return;
+    public void beginRenamePlaylistChain(@NonNull Playlist playlist, Runnable onRenamed) {
         showRenamePlaylistDialog(playlist, onRenamed);
     }
 

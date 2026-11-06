@@ -11,7 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.activities.MainActivity;
-import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 
@@ -61,13 +61,22 @@ public class AllSongListViewFragmentTest {
                 assertEquals("Beta Song", displayedNameAsc.get(1).getTitre());
                 assertEquals("Gamma Song", displayedNameAsc.get(2).getTitre());
 
-                // 2. Test du tri Z -> A
+                // 2. Test du tri Z -> A (Nom)
                 fragment.setSortMode(SortMode.NAME_DESC);
                 List<Song> displayedNameDesc = fragment.getListDisplayed();
                 assertEquals(3, displayedNameDesc.size());
                 assertEquals("Gamma Song", displayedNameDesc.get(0).getTitre());
                 assertEquals("Beta Song", displayedNameDesc.get(1).getTitre());
                 assertEquals("Alpha Song", displayedNameDesc.get(2).getTitre());
+
+                // 3. Test du tri par Date
+                fragment.setSortMode(SortMode.DATE_ASC);
+                List<Song> displayedDateAsc = fragment.getListDisplayed();
+                assertEquals(3, displayedDateAsc.size());
+
+                fragment.setSortMode(SortMode.DATE_DESC);
+                List<Song> displayedDateDesc = fragment.getListDisplayed();
+                assertEquals(3, displayedDateDesc.size());
             });
         }
     }

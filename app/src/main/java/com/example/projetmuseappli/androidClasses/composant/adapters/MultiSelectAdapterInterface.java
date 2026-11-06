@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.example.projetmuseappli.R;
 
 import java.util.Set;
@@ -56,8 +58,8 @@ public interface MultiSelectAdapterInterface<T> extends MediaRecyclerViewAdapter
      * @param containerView La vue conteneur de l'item dont le fond doit être teinté.
      * @param isSelected {@code true} si l'élément est sélectionné, {@code false} sinon.
      */
-    default void applySelectionFilter(View containerView, boolean isSelected) {
-        if (containerView == null || getContext() == null) return;
+    default void applySelectionFilter(@NonNull View containerView, boolean isSelected) {
+        if (getContext() == null) return;
 
         Drawable bg = containerView.getBackground();
         if (bg == null) return;

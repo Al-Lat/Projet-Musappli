@@ -37,12 +37,12 @@ public class Song implements Serializable {
     private static final long serialVersionUID = 2414591651L;
 
     /*Identifiant unique du fichier son*/
-    private UUID UUID;
+    private final UUID uuid;
     private String Extension;
     private String titre;
     private LocalDate dateImport;
 
-    private String FORMAT_DATE_DEFAUT = "dd/MM/yyyy";
+    private static final String FORMAT_DATE_DEFAUT = "dd/MM/yyyy";
 
     /** Liste immuable des extensions de fichiers audio supportées par l'application. */
     public static final List<String> EXTENSIONS_VALIDES =
@@ -57,7 +57,7 @@ public class Song implements Serializable {
      * @throws IllegalArgumentException si l'extension ou le titre est invalide.
      */
     public Song(UUID uuid, @NonNull String Extension, @NonNull String titre){
-        this.UUID = uuid;
+        this.uuid = uuid;
 
         if(EXTENSIONS_VALIDES.contains(Extension)){
             this.Extension = Extension;
@@ -82,7 +82,7 @@ public class Song implements Serializable {
      * @return L'identifiant {@link UUID}.
      */
     public UUID getUUID() {
-        return UUID;
+        return uuid;
     }
 
     /**
@@ -147,7 +147,7 @@ public class Song implements Serializable {
     @Override
     public String toString() {
         return "Song{" +
-                "UUID=" + UUID +
+                "UUID=" + uuid +
                 ", Extension='" + Extension + '\'' +
                 ", titre='" + titre + '\'' +
                 ", dateImport=" + dateImport +

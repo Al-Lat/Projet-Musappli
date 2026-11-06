@@ -66,7 +66,7 @@ public class HistoryListViewFragment extends RecyclerListViewFragmentAbstract<So
         if (getView() == null || getActivity() == null) {
             return;
         }
-        requireActivity().runOnUiThread(this::refrechFragment);
+        requireActivity().runOnUiThread(this::refreshFragment);
     }
 
     @Override

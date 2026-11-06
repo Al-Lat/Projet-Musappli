@@ -164,47 +164,46 @@ Classes concernées : `PlaylistHeader`, `MainHeader`, `MainFooter`.
 
 ## 3. Cas Particuliers & Analyse des Fonctionnalités Supplémentaires
 
-### A. Gestion des Noms Identiques (Doublons de titres/noms pour `Song` et `Playlist`)
+### A. Gestion des Noms Identiques et Validation des Noms pour `Song` et `Playlist`
 
 > [!NOTE]
-> **Statut du code actuel** : **NON GÉRÉ** dans le code métier actuel.
+> **Statut d'implémentation** :
 > - `Song` et `Playlist` sont stockés dans la `Masterlist` au sein de `HashMap<UUID, Song>` et `HashMap<UUID, Playlist>`.
-> - L'unicité est basée uniquement sur le `UUID`. Le système autorise actuellement deux morceaux ou deux playlists d'avoir exactement le même nom à la création ou lors du changement de nom (`setName`).
-> - `Playlist.setName()` ne vérifie pas non plus si le nom fourni est vide `""` (alors que le constructeur le fait).
+> - L'unicité est basée sur le `UUID`. Le système autorise deux morceaux ou deux playlists à avoir le même nom (comportement intentionnel par UUID).
+> - **Validation de nom désormais implémentée** : `Playlist.setName()` vérifie et rejette désormais les noms nuls ou vides (`""` / espaces) en levant une `IllegalArgumentException`, de façon uniforme avec les constructeurs.
 
-#### Cas de test prévus / à ajouter :
+#### Cas de test :
 1. **`testSongDuplicateNameAllowedCurrentBehavior`** :
    - **Description** : Création de deux morceaux `Song` ayant le même titre (ex. `"SongA"`).
-   - **Résultat actuel** : Les deux morceaux sont créés et stockés séparément car leurs UUIDs diffèrent.
+   - **Résultat attendu** : Les deux morceaux sont créés et stockés séparément car leurs UUIDs diffèrent.
 2. **`testPlaylistDuplicateNameAllowedCurrentBehavior`** :
    - **Description** : Création de deux playlists ayant le même nom (ex. `"Ma Playlist"`).
-   - **Résultat actuel** : Les deux playlists sont acceptées dans `Masterlist`.
+   - **Résultat attendu** : Les deux playlists sont acceptées dans `Masterlist`.
 3. **`testPlaylistRenameDuplicateName`** :
    - **Description** : Renommage d'une playlist avec un nom déjà utilisé par une autre playlist via `setName()`.
-   - **Résultat actuel** : Le renommage réussit sans exception.
-4. **`testPlaylistRenameEmptyName`** (*Anomalie potentielle*) :
-   - **Description** : Renommage d'une playlist avec une chaîne vide `""` via `setName()`.
-   - **Résultat actuel** : Accepté par `setName()` (contrairement au constructeur de `Playlist` qui lève une `IllegalArgumentException`).
+   - **Résultat attendu** : Le renommage réussit.
+4. **`testSetNameEmptyName` & `testSetNameBlankName`** :
+   - **Description** : Renommage d'une playlist avec une chaîne vide `""` ou uniquement des espaces via `setName()`.
+   - **Résultat attendu** : Une `IllegalArgumentException` est désormais levée.
 
 ---
 
 ### B. Tri d'une Playlist (par Date d'ajout ou par Nom)
 
 > [!NOTE]
-> **Statut du code actuel** : **MÉTHODE DE TRI NON ENCORE IMPLÉMENTÉE** sur `Playlist`.
-> - `Playlist` conserve les morceaux dans une `LinkedList<Song>` selon l'ordre d'insertion (ordre par défaut).
-> - Les comparateurs `SongNameComparator` et `SongDateComparator` sont **déjà implémentés** dans `Song.java`.
-> - Aucune méthode de tri (ex. `sortByName()` ou `sortByDate()`) n'existe encore sur la classe `Playlist`.
+> **Statut d'implémentation** : **MÉTHODES DE TRI IMPLÉMENTÉES** sur `Playlist`.
+> - `Playlist` conserve les morceaux dans une liste `LinkedList<Song>`.
+> - Les méthodes de tri `sortByName()` et `sortByDate()` sont désormais disponibles sur `Playlist` et exploitent `Song.SongNameComparator` et `Song.SongDateComparator`.
 
-#### Cas de test pour la future méthode de tri :
+#### Cas de test pour les méthodes de tri :
 1. **`testPlaylistDefaultOrderIsInsertionOrder`** :
-   - **Description** : Vérifier que l'ordre par défaut de `getSongList()` correspond à l'ordre chronologique d'ajout des morceaux dans la playlist.
-2. **`testPlaylistSortByName`** (*Future méthode de tri*) :
-   - **Description** : Appeler la future méthode de tri par nom sur une playlist contenant des morceaux mélangés (ex. `"Zebra"`, `"Alpha"`, `"Beta"`).
-   - **Résultat attendu** : La liste renvoyée doit être triée alphabétiquement (`"Alpha"`, `"Beta"`, `"Zebra"`).
-3. **`testPlaylistSortByDate`** (*Future méthode de tri*) :
-   - **Description** : Appeler la future méthode de tri par date sur une playlist.
-   - **Résultat attendu** : La liste renvoyée doit être ordonnée selon les dates d'importation des morceaux.
+   - **Description** : Vérifier que l'ordre par défaut de `getSongList()` correspond à l'ordre d'ajout des morceaux.
+2. **`testSortByNameDirect`** :
+   - **Description** : Appeler `playlist.sortByName()` sur une playlist.
+   - **Résultat attendu** : La liste des morceaux est triée alphabétiquement par titre.
+3. **`testSortByDateDirect`** :
+   - **Description** : Appeler `playlist.sortByDate()` sur une playlist.
+   - **Résultat attendu** : La liste des morceaux est triée chronologiquement par date d'importation.
 
 ---
 
@@ -225,3 +224,29 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-android:5.11.0")
 }
 ```
+
+---
+
+## 5. Plan de Test pour la Notification Media Control (Media3 / PlaybackService)
+
+Ce module définit les scénarios de test pour le comportement de la notification de contrôle média gérée par `PlaybackService`, `PlayerManager` et `MainActivity`.
+
+### A. Clic sur la Notification (Ouverture de l'Application)
+- **`testNotificationClickOpensMainActivity`** :
+  - **Description** : Vérifier que lorsqu'un utilisateur clique sur la zone vide / le corps de la notification media, le `PendingIntent` configuré sur la `MediaSession` redirige l'utilisateur vers `MainActivity`.
+  - **Assertions / Vérifications** : L'intent configuré dans `setSessionActivity` pointe bien vers `MainActivity.class` avec les drapeaux appropriés (`FLAG_IMMUTABLE`, `FLAG_UPDATE_CURRENT`).
+
+### B. Suppression de la Notification par Swipe (Arrêt du Son et de l'Application)
+- **`testNotificationDismissStopsPlaybackAndService`** :
+  - **Description** : Vérifier que la suppression (swipe) de la notification ou le déclenchement de `onTaskRemoved` stoppe immédiatement la lecture audio (`player.stop()`, `player.clearMediaItems()`) et détruit le service `PlaybackService` (`stopSelf()`).
+  - **Assertions / Vérifications** : `isPlaying()` passe à `false`, l'instance `ExoPlayer` est libérée et le service est arrêté.
+- **`testNotificationDismissClosesMainActivity`** :
+  - **Description** : Vérifier que l'arrêt du service à la suite du swipe transmet un signal de fermeture à `MainActivity` provoquant la fermeture propre de l'activité UI (`finishAndRemoveTask()`).
+  - **Assertions / Vérifications** : `MainActivity` intercepte l'événement d'arrêt et se termine sans laisser de processus zombie.
+
+### C. Maintien en Arrière-plan et Contrôles Média
+- **`testBackgroundPlaybackOnAppMinimize`** :
+  - **Description** : Vérifier que le passage de l'application en arrière-plan (sans supprimer la notification) maintient la lecture audio et conserve la notification media active.
+- **`testNotificationMediaControlsActions`** :
+  - **Description** : Vérifier que l'interaction avec les boutons Play/Pause, Suivant et Précédent de la notification commande correctement le `MediaController` et met à jour l'état de l'ExoPlayer.
+

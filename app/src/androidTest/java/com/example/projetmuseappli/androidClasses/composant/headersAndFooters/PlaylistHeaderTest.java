@@ -8,7 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.projetmuseappli.androidClasses.activities.PlaylistActivity;
-import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;

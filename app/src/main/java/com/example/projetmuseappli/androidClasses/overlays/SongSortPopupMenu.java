@@ -4,8 +4,10 @@ import android.content.Context;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+
 import com.example.projetmuseappli.R;
-import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 
 /**
  * Classe utilitaire pour l'affichage du menu contextuel (Popup Menu) permettant de trier les morceaux.
@@ -25,7 +27,7 @@ public class SongSortPopupMenu {
      * @param anchorView La vue sur laquelle ancrer le menu.
      * @param listener Le callback notifié de l'option choisie.
      */
-    public static void showSortPopup(View anchorView, OnSortOptionSelectedListener listener) {
+    public static void showSortPopup(@NonNull View anchorView, @NonNull OnSortOptionSelectedListener listener) {
         showSortPopup(anchorView, false, listener);
     }
 
@@ -36,11 +38,7 @@ public class SongSortPopupMenu {
      * @param showCustomOption Indique s'il faut afficher l'option de filtre "Personalisé".
      * @param listener Le callback notifié de l'option choisie.
      */
-    public static void showSortPopup(View anchorView, boolean showCustomOption, OnSortOptionSelectedListener listener) {
-        if (anchorView == null || listener == null) {
-            return;
-        }
-
+    public static void showSortPopup(@NonNull View anchorView, boolean showCustomOption, @NonNull OnSortOptionSelectedListener listener) {
         Context context = anchorView.getContext();
         PopupMenu popup = new PopupMenu(context, anchorView);
         popup.getMenuInflater().inflate(R.menu.menu_sort_options, popup.getMenu());

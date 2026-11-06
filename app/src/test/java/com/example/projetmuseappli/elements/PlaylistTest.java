@@ -115,6 +115,48 @@ public class PlaylistTest {
         assertEquals("Nouveau Nom", playlist.getName());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetNameEmptyName() {
+        Playlist playlist = new Playlist("Ancien Nom", song1);
+        playlist.setName("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetNameBlankName() {
+        Playlist playlist = new Playlist("Ancien Nom", song1);
+        playlist.setName("   ");
+    }
+
+    @Test
+    public void testSortByNameDirect() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song3); // Gamma
+        songs.add(song1); // Alpha
+        songs.add(song2); // Beta
+
+        Playlist playlist = new Playlist("A trier", songs);
+        playlist.sortByName();
+
+        assertEquals("Song Alpha", playlist.getSong(0).getTitre());
+        assertEquals("Song Beta", playlist.getSong(1).getTitre());
+        assertEquals("Song Gamma", playlist.getSong(2).getTitre());
+    }
+
+    @Test
+    public void testSortByDateDirect() {
+        List<Song> songs = new ArrayList<>();
+        songs.add(song3);
+        songs.add(song1);
+        songs.add(song2);
+
+        Playlist playlist = new Playlist("A trier par date", songs);
+        playlist.sortByDate();
+
+        assertNotNull(playlist.getSong(0));
+        assertNotNull(playlist.getSong(1));
+        assertNotNull(playlist.getSong(2));
+    }
+
     @Test
     public void testDuplicatePlaylistNameAllowedCurrentBehavior() {
         // Signalement : Deux playlists avec le même nom sont autorisées dans le code actuel (différenciées par UUID)

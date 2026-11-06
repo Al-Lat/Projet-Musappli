@@ -82,12 +82,8 @@ public class Masterlist implements Serializable {
      *
      * @param context Le contexte Android pour accéder au stockage interne.
      */
-    public static void init(Context context) {
-
-        // On récupère le contexte global de l'application
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
+    public static void init(@NonNull Context context) {
+        appContext = context.getApplicationContext();
 
         if (instance == null) {
             synchronized (Masterlist.class) {
@@ -163,7 +159,7 @@ public class Masterlist implements Serializable {
      *
      * @param listener L'écouteur à ajouter.
      */
-    public void addListener(MasterlistListener listener) {
+    public void addListener(@NonNull MasterlistListener listener) {
         getListeners().add(listener);
     }
 
@@ -172,7 +168,7 @@ public class Masterlist implements Serializable {
      *
      * @param listener L'écouteur à retirer.
      */
-    public void removeListener(MasterlistListener listener) {
+    public void removeListener(@NonNull MasterlistListener listener) {
         getListeners().remove(listener);
     }
 
@@ -364,7 +360,7 @@ public class Masterlist implements Serializable {
      * @throws IllegalStateException si l'instance de la Masterlist est null.
      */
     public boolean isEmpty(){
-        if (this.instance == null){
+        if (Masterlist.instance == null){
             throw new IllegalStateException("The Masterlist instance is null and cannot be tested");
         }
 

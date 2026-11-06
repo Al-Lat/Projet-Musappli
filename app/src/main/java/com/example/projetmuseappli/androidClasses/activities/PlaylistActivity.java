@@ -13,7 +13,7 @@ import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.MainFooter;
 import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.PlaylistHeader;
-import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 import com.example.projetmuseappli.androidClasses.overlays.SongItemPopupMenu;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
 import com.example.projetmuseappli.elements.Masterlist;

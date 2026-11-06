@@ -8,9 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.composant.adapters.SongAdapter;
-import com.example.projetmuseappli.androidClasses.fragments.AllSongListViewFragment.SortMode;
 import com.example.projetmuseappli.androidClasses.overlays.PlaylistMenuChain;
 import com.example.projetmuseappli.androidClasses.overlays.SongSortPopupMenu;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Playlist;
 import com.example.projetmuseappli.elements.Song;
@@ -229,25 +230,8 @@ public class PlaylistHeader {
             }
         }
 
-        // 2. Application du tri
-        switch (currentSortMode) {
-            case CUSTOM:
-                // Conservé dans l'ordre réel de la liste en mémoire (pas de tri)
-                break;
-            case DATE_ASC:
-                filteredList.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
-                break;
-            case NAME_ASC:
-                filteredList.sort((s1, s2) -> s1.getTitre().compareToIgnoreCase(s2.getTitre()));
-                break;
-            case NAME_DESC:
-                filteredList.sort((s1, s2) -> s2.getTitre().compareToIgnoreCase(s1.getTitre()));
-                break;
-            case DATE_DESC:
-            default:
-                filteredList.sort((s1, s2) -> s2.getDate().compareTo(s1.getDate()));
-                break;
-        }
+        // 2. Application du tri centralisé via SongSortHelper
+        filteredList = SongSortHelper.sortSongs(filteredList, currentSortMode);
 
         adapter.setItems(filteredList);
     }

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.example.projetmuseappli.elements.Song;
 
+import androidx.annotation.NonNull;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -56,7 +58,7 @@ public class PlaybackHistoryManager implements Serializable {
      * @param context Le contexte Android.
      * @return L'instance unique de {@link PlaybackHistoryManager}.
      */
-    public static PlaybackHistoryManager getInstance(Context context) {
+    public static PlaybackHistoryManager getInstance(@NonNull Context context) {
         if (instance == null) {
             synchronized (PlaybackHistoryManager.class) {
                 if (instance == null) {
@@ -67,17 +69,15 @@ public class PlaybackHistoryManager implements Serializable {
         return instance;
     }
 
-    private static void loadHistory(Context context) {
-        if (context == null) {
-            instance = new PlaybackHistoryManager();
-            return;
-        }
+    private static void loadHistory(@NonNull Context context) {
         Context appContext = context.getApplicationContext();
         try (FileInputStream fis = appContext.openFileInput(FILE_NAME);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             instance = (PlaybackHistoryManager) ois.readObject();
             if (instance.historyList == null) {
                 instance.historyList = new LinkedList<>();
+            } else {
+                instance.historyList.removeIf(s -> s == null || s.getUUID() == null);
             }
         } catch (Exception e) {
             Log.i("PlaybackHistoryManager", "Création d'un nouvel historique de lecture.");
@@ -91,10 +91,12 @@ public class PlaybackHistoryManager implements Serializable {
      * @param context Le contexte Android.
      * @param song Le morceau {@link Song} joué.
      */
-    public synchronized void addSongToHistory(Context context, Song song) {
-        if (song == null) return;
+    public synchronized void addSongToHistory(@NonNull Context context, @NonNull Song song) {
+        if (historyList == null) {
+            historyList = new LinkedList<>();
+        }
 
-        historyList.removeIf(s -> s.getUUID().equals(song.getUUID()));
+        historyList.removeIf(s -> s == null || s.getUUID() == null || s.getUUID().equals(song.getUUID()));
         historyList.addFirst(song);
 
         while (historyList.size() > MAX_HISTORY_SIZE) {
@@ -111,6 +113,9 @@ public class PlaybackHistoryManager implements Serializable {
      * @return La liste d'objets {@link Song}.
      */
     public synchronized List<Song> getHistoryList() {
+        if (historyList == null) {
+            historyList = new LinkedList<>();
+        }
         return new ArrayList<>(historyList);
     }
 
@@ -119,14 +124,17 @@ public class PlaybackHistoryManager implements Serializable {
      *
      * @param context Le contexte Android.
      */
-    public synchronized void clearHistory(Context context) {
-        historyList.clear();
+    public synchronized void clearHistory(@NonNull Context context) {
+        if (historyList == null) {
+            historyList = new LinkedList<>();
+        } else {
+            historyList.clear();
+        }
         saveHistory(context);
         notifyListeners();
     }
 
-    private void saveHistory(Context context) {
-        if (context == null) return;
+    private void saveHistory(@NonNull Context context) {
         Context appContext = context.getApplicationContext();
         try (FileOutputStream fos = appContext.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -141,7 +149,7 @@ public class PlaybackHistoryManager implements Serializable {
      *
      * @param listener L'écouteur à ajouter.
      */
-    public void addListener(HistoryChangeListener listener) {
+    public void addListener(@NonNull HistoryChangeListener listener) {
         getListeners().add(listener);
     }
 
@@ -150,7 +158,7 @@ public class PlaybackHistoryManager implements Serializable {
      *
      * @param listener L'écouteur à retirer.
      */
-    public void removeListener(HistoryChangeListener listener) {
+    public void removeListener(@NonNull HistoryChangeListener listener) {
         getListeners().remove(listener);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projetmuseappli.R;
@@ -28,7 +29,7 @@ public class SongItemPopupMenu {
      * @param holder Le ViewHolder contenant le morceau.
      * @param currentSong Le morceau sélectionné.
      */
-    public static void showSongItemPopup(View view, RecyclerView.ViewHolder holder, Song currentSong) {
+    public static void showSongItemPopup(@NonNull View view, RecyclerView.ViewHolder holder, Song currentSong) {
 
         SongAdapter songAdapter = null;
         if (holder != null && holder.getBindingAdapter() instanceof SongAdapter) {
@@ -46,15 +47,15 @@ public class SongItemPopupMenu {
      * @param adapter L'adaptateur de sons.
      * @param selectedSongs L'ensemble des morceaux actuellement sélectionnés.
      */
-    public static void showMultipleSongsItemPopup(View view, SongAdapter adapter, Set<Song> selectedSongs) {
-        if (selectedSongs == null || selectedSongs.isEmpty()) {
+    public static void showMultipleSongsItemPopup(@NonNull View view, SongAdapter adapter, @NonNull Set<Song> selectedSongs) {
+        if (selectedSongs.isEmpty()) {
             return;
         }
         displayPopupMenu(view, adapter, new ArrayList<>(selectedSongs));
     }
 
-    private static void displayPopupMenu(View view, SongAdapter adapter, List<Song> songsToProcess) {
-        if (songsToProcess == null || songsToProcess.isEmpty()) {
+    private static void displayPopupMenu(@NonNull View view, SongAdapter adapter, @NonNull List<Song> songsToProcess) {
+        if (songsToProcess.isEmpty()) {
             return;
         }
 

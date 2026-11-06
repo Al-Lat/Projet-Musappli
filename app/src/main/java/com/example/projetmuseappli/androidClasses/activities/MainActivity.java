@@ -1,8 +1,13 @@
 package com.example.projetmuseappli.androidClasses.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.projetmuseappli.R;
@@ -13,6 +18,7 @@ import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.All
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.AllSongListViewFragmentStrategy;
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.HistoryListViewFragmentStrategy;
 import com.example.projetmuseappli.androidClasses.fragments.FragmentStrategy.ImportFragmentStrategy;
+import com.example.projetmuseappli.androidClasses.services.PlaybackService;
 import com.example.projetmuseappli.elements.Masterlist;
 
 /**
@@ -24,6 +30,15 @@ public class MainActivity extends AppCompatActivity {
     private MainFooter footer;
 
     private ViewPager2 fragmentContainer;
+
+    private final BroadcastReceiver stopReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && PlaybackService.ACTION_STOP_APP.equals(intent.getAction())) {
+                finishAndRemoveTask();
+            }
+        }
+    };
 
     /**
      * Initialise la vue principale, charge la {@link Masterlist} et configure le {@link ViewPager2} avec son adapteur.
@@ -44,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
         this.header = new MainHeader(this,fragmentContainer);
         this.footer = new MainFooter(this);
 
+        IntentFilter filter = new IntentFilter(PlaybackService.ACTION_STOP_APP);
+        ContextCompat.registerReceiver(this, stopReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            unregisterReceiver(stopReceiver);
+        } catch (Exception ignored) {}
+        super.onDestroy();
     }
 
     private static FragmentList getFragmentList(){

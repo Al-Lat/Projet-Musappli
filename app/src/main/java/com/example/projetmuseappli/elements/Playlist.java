@@ -76,9 +76,9 @@ public class Playlist implements Serializable {
      * @param list Liste initiale de morceaux {@link Song}.
      * @throws IllegalArgumentException si le nom spécifié est vide.
      */
-    public Playlist(String name, List<Song> list){
+    public Playlist(@NonNull String name, List<Song> list){
         setUUID();
-        if(name == null || name.isEmpty()){
+        if(name.isEmpty()){
             throw new IllegalArgumentException("Le nom de la playlist ne peut pas etre vide");
         }
         this.name = name;
@@ -236,9 +236,54 @@ public class Playlist implements Serializable {
      * Modifie le nom de la playlist.
      *
      * @param name Le nouveau nom.
+     * @throws IllegalArgumentException si le nom spécifié est nul ou vide.
      */
     public void setName(@NonNull String name) {
+        if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom de la playlist ne peut pas être vide");
+        }
         this.name = name;
+    }
+
+    /**
+     * Trie la liste des morceaux de la playlist par titre (ordre alphabétique A-Z par défaut).
+     */
+    public void sortByName() {
+        sortByName(true);
+    }
+
+    /**
+     * Trie la liste des morceaux de la playlist par titre (ordre alphabétique).
+     *
+     * @param ascending {@code true} pour l'ordre croissant (A à Z), {@code false} pour décroissant (Z à A).
+     */
+    public void sortByName(boolean ascending) {
+        if (ascending) {
+            this.playlist.sort(new Song.SongNameComparator());
+        } else {
+            this.playlist.sort(new Song.SongNameComparator().reversed());
+        }
+    }
+
+    /**
+     * Trie la liste des morceaux de la playlist par date d'importation (ordre chronologique par défaut).
+     */
+    public void sortByDate() {
+        sortByDate(true);
+    }
+
+    /**
+     * Trie la liste des morceaux de la playlist par date d'importation.
+     *
+     * @param ascending {@code true} pour l'ordre croissant (plus ancien au plus récent),
+     *                  {@code false} pour l'ordre décroissant (plus récent au plus ancien).
+     */
+    public void sortByDate(boolean ascending) {
+        if (ascending) {
+            this.playlist.sort(new Song.SongDateComparator());
+        } else {
+            this.playlist.sort(new Song.SongDateComparator().reversed());
+        }
     }
 
     /**
@@ -247,8 +292,8 @@ public class Playlist implements Serializable {
      * @param list La nouvelle liste de morceaux.
      * @throws IllegalArgumentException si la liste spécifiée est nulle ou vide.
      */
-    public void setSongList(List<Song> list) {
-        if (list == null || list.isEmpty()) {
+    public void setSongList(@NonNull List<Song> list) {
+        if (list.isEmpty()) {
             throw new IllegalArgumentException("La liste de morceaux ne peut pas être nulle ou vide");
         }
         this.playlist = new LinkedList<>(list);

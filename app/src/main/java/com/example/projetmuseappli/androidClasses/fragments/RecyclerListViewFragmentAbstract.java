@@ -102,14 +102,14 @@ public abstract class RecyclerListViewFragmentAbstract<ListType, AdapterType ext
         errorTextView = view.findViewById(R.id.fragmentTextViewNoItem);
         errorTextView.setText(getEmptyListMessageRes());
 
-        refrechFragment();
+        refreshFragment();
         return view;
     }
 
     /**
      * Rafraîchit les données du fragment à partir de {@link #loadList()} et ajuste la visibilité de la vue.
      */
-    public void refrechFragment() {
+    public void refreshFragment() {
         adapter.setItems(loadList());
         updateVisibility();
     }
@@ -142,7 +142,7 @@ public abstract class RecyclerListViewFragmentAbstract<ListType, AdapterType ext
         if (getView() == null) {
             return;
         }
-        requireActivity().runOnUiThread(this::refrechFragment);
+        requireActivity().runOnUiThread(this::refreshFragment);
     }
 
     @Override public void onStart() {
@@ -151,7 +151,7 @@ public abstract class RecyclerListViewFragmentAbstract<ListType, AdapterType ext
     }
     @Override public void onResume() {
         super.onResume();
-        refrechFragment();
+        refreshFragment();
     }
     @Override public void onStop()  {
         super.onStop();

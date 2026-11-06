@@ -20,6 +20,8 @@ package com.example.projetmuseappli.androidClasses.utilitaries;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 
@@ -43,7 +45,7 @@ public class LocalStorageImportManager {
      * @throws RuntimeException En cas d'erreur de copie ou d'accès au fichier.
      * @throws IllegalArgumentException Si l'extension du fichier est invalide.
      */
-    public static void importAudioFile(Context context, Uri uriFichier) throws RuntimeException {
+    public static void importAudioFile(@NonNull Context context, @NonNull Uri uriFichier) throws RuntimeException {
 
         //Récupérer le nom du fichier
         String nomFichier = Utilitaries.getFileNameFromUri(context, uriFichier);
@@ -76,18 +78,15 @@ public class LocalStorageImportManager {
     private static void copyFileToLocalStorage(Context context, Uri uriFichier , String nomFichier, String extension) throws IOException, SecurityException {
         String nomComplet = nomFichier+"."+extension;
 
-        //Ouvrir le flux de lecture à partir de l'Uri source
-        InputStream inputStream = context.getContentResolver().openInputStream(uriFichier);
-
         //Créer le fichier de destination dans le dossier privé de l'app
         File targetFile = new File(context.getFilesDir(), nomComplet);
 
-        //Copier les données du flux dans le fichier de destination
-        Files.copy(inputStream,targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-        //Fermeture des flux
-        if (inputStream != null) {
-            inputStream.close();
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uriFichier)) {
+            if (inputStream == null) {
+                throw new IOException("Impossible d'ouvrir le flux pour l'URI : " + uriFichier);
+            }
+            //Copier les données du flux dans le fichier de destination
+            Files.copy(inputStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

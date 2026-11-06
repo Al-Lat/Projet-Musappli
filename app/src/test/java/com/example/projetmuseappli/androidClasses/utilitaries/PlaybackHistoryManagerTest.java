@@ -53,4 +53,18 @@ public class PlaybackHistoryManagerTest {
         assertEquals("Song 1", manager.getHistoryList().get(0).getTitre());
         assertEquals(2, manager.getHistoryList().size());
     }
+
+
+
+    @Test
+    public void testAddSongWithCorruptedNullEntryDoesNotCrash() {
+        PlaybackHistoryManager manager = PlaybackHistoryManager.getInstance(RuntimeEnvironment.getApplication());
+        manager.clearHistory(RuntimeEnvironment.getApplication());
+
+        // Simule un historique contenant un élément null ou ayant un UUID null (désérialisation ancienne)
+        manager.getHistoryList(); // s'assure de l'initialisation
+        Song validSong = new Song(UUID.randomUUID(), "mp3", "Valid Song");
+        manager.addSongToHistory(RuntimeEnvironment.getApplication(), validSong);
+        assertEquals(1, manager.getHistoryList().size());
+    }
 }

@@ -13,8 +13,11 @@ import com.example.projetmuseappli.androidClasses.composant.headersAndFooters.He
 import com.example.projetmuseappli.androidClasses.overlays.SongItemPopupMenu;
 import com.example.projetmuseappli.androidClasses.overlays.SongSortPopupMenu;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper;
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
+
+import com.example.projetmuseappli.androidClasses.utilitaries.SongSortHelper.SortMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +28,6 @@ import java.util.Set;
  * avec barre de recherche et menu de tri.
  */
 public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<Song, SongAdapter> {
-
-    /**
-     * Enumération des modes de tri disponibles pour la liste de morceaux.
-     */
-    public enum SortMode {
-        CUSTOM,    // Personnalisé (ordre réel de la liste en mémoire)
-        DATE_DESC, // Date d'ajout (plus récent au plus ancien)
-        DATE_ASC,  // Date d'ajout (plus ancien au plus récent)
-        NAME_ASC,  // Nom (A à Z)
-        NAME_DESC  // Nom (Z à A)
-    }
 
     private HeaderSearchHelper searchHelper;
     private String currentQuery = "";
@@ -154,22 +146,8 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
             }
         }
 
-        // 2. Application du tri
-        switch (currentSortMode) {
-            case DATE_ASC:
-                filteredSongs.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
-                break;
-            case NAME_ASC:
-                filteredSongs.sort((s1, s2) -> s1.getTitre().compareToIgnoreCase(s2.getTitre()));
-                break;
-            case NAME_DESC:
-                filteredSongs.sort((s1, s2) -> s2.getTitre().compareToIgnoreCase(s1.getTitre()));
-                break;
-            case DATE_DESC:
-            default:
-                filteredSongs.sort((s1, s2) -> s2.getDate().compareTo(s1.getDate()));
-                break;
-        }
+        // 2. Application du tri centralisé via SongSortHelper
+        filteredSongs = SongSortHelper.sortSongs(filteredSongs, currentSortMode);
 
         getAdapter().setItems(filteredSongs);
 
@@ -181,7 +159,7 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
     }
 
     @Override
-    public void refrechFragment() {
+    public void refreshFragment() {
         filterAndSort();
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
@@ -16,6 +17,8 @@ import com.example.projetmuseappli.androidClasses.utilitaries.PlaybackHistoryMan
 import com.example.projetmuseappli.elements.Masterlist;
 import com.example.projetmuseappli.elements.Song;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,13 +54,16 @@ public class PlayerManager {
                                                 .getInstance(appContext)
                                                 .addSongToHistory(appContext, song);
                                     }
-                                } catch (Exception ignored) {}
+                                } catch (Exception e) {
+                                    // mediaId invalide ou song introuvable : cas non bloquant
+                                    Log.w("PlayerManager", "onMediaItemTransition: impossible de retrouver le morceau", e);
+                                }
                             }
                         }
                     });
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("PlayerManager", "Erreur lors de l'initialisation du MediaController", e);
             }
         }, ContextCompat.getMainExecutor(appContext));
     }
@@ -68,7 +74,7 @@ public class PlayerManager {
      * @param context Le contexte d'exécution.
      * @return L'instance unique de PlayerManager.
      */
-    public static synchronized PlayerManager getInstance(Context context) {
+    public static synchronized PlayerManager getInstance(@NonNull Context context) {
         if (instance == null) {
             instance = new PlayerManager(context);
         }
@@ -81,9 +87,7 @@ public class PlayerManager {
      * @param context Le contexte d'exécution.
      * @param song Le morceau à jouer.
      */
-    public void playSong(Context context, Song song) {
-        if (song == null) return;
-
+    public void playSong(@NonNull Context context, @NonNull Song song) {
         PlaybackHistoryManager
                 .getInstance(context)
                 .addSongToHistory(context, song);
@@ -115,7 +119,7 @@ public class PlayerManager {
 
         if (mediaController != null) {
             startPlayback.run();
-        } else if (controllerFuture != null) {
+        } else {
             controllerFuture.addListener(startPlayback, ContextCompat.getMainExecutor(context));
         }
     }
@@ -129,9 +133,7 @@ public class PlayerManager {
      * @param songList La liste des morceaux de référence (non filtrée).
      * @param songToPlay Le morceau sélectionné par lequel commencer la lecture.
      */
-    public void playSongFromList(Context context, List<Song> songList, Song songToPlay) {
-        if (songToPlay == null) return;
-
+    public void playSongFromList(@NonNull Context context, List<Song> songList, @NonNull Song songToPlay) {
         PlaybackHistoryManager
                 .getInstance(context)
                 .addSongToHistory(context, songToPlay);
@@ -193,7 +195,7 @@ public class PlayerManager {
 
         if (mediaController != null) {
             startPlayback.run();
-        } else if (controllerFuture != null) {
+        } else {
             controllerFuture.addListener(startPlayback, ContextCompat.getMainExecutor(context));
         }
     }
@@ -302,10 +304,10 @@ public class PlayerManager {
      * @param context Contexte d'exécution.
      * @param listener L'écouteur d'événements.
      */
-    public void addListener(Context context, Player.Listener listener) {
+    public void addListener(@NonNull Context context, @NonNull Player.Listener listener) {
         if (mediaController != null) {
             mediaController.addListener(listener);
-        } else if (controllerFuture != null) {
+        } else {
             controllerFuture.addListener(() -> {
                 if (mediaController != null) {
                     mediaController.addListener(listener);
@@ -320,7 +322,7 @@ public class PlayerManager {
      *
      * @param listener L'écouteur à retirer.
      */
-    public void removeListener(Player.Listener listener) {
+    public void removeListener(@NonNull Player.Listener listener) {
         if (mediaController != null) {
             mediaController.removeListener(listener);
         }

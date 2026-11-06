@@ -3,6 +3,8 @@ package com.example.projetmuseappli.androidClasses.overlays;
 import android.app.AlertDialog;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.example.projetmuseappli.R;
 
 /**
@@ -18,9 +20,7 @@ public class ConfirmationDialogHelper {
      * @param messageRes L'identifiant de ressource du message du dialogue.
      * @param onConfirm Callback exécuté lorsque l'utilisateur confirme l'action.
      */
-    public static void showConfirmationDialog(Context context, int titleRes, int messageRes, Runnable onConfirm) {
-        if (context == null) return;
-
+    public static void showConfirmationDialog(@NonNull Context context, int titleRes, int messageRes, Runnable onConfirm) {
         new AlertDialog.Builder(context)
                 .setTitle(titleRes)
                 .setMessage(messageRes)
@@ -39,7 +39,7 @@ public class ConfirmationDialogHelper {
      * @param context Le contexte d'exécution.
      * @param onConfirm Callback exécuté lorsque l'utilisateur valide la suppression.
      */
-    public static void showDeleteConfirmationDialog(Context context, Runnable onConfirm) {
+    public static void showDeleteConfirmationDialog(@NonNull Context context, Runnable onConfirm) {
         showConfirmationDialog(context, R.string.delete_confirmation_title, R.string.delete_confirmation_message, onConfirm);
     }
 }
