@@ -121,12 +121,14 @@ public class PlaylistActivity extends AppCompatActivity {
                 , new SongAdapter.OnSongClickListener() {
             @Override
             public void onItemClick(Song song) {
-                PlayerManager
-                        .getInstance(PlaylistActivity.this)
-                        .playSongFromList(
-                                PlaylistActivity.this,
-                                Masterlist.getInstance().getPlaylist(uuidOfRefPlaylist).getSongList(),
-                                song);
+                PlayerManager playerManager = PlayerManager.getInstance(PlaylistActivity.this);
+                if (playerManager.isPlayingSong(song)) {
+                    return;
+                }
+                playerManager.playSongFromList(
+                        PlaylistActivity.this,
+                        Masterlist.getInstance().getPlaylist(uuidOfRefPlaylist).getSongList(),
+                        song);
             }
 
             @Override

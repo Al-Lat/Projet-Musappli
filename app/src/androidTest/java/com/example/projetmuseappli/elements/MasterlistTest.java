@@ -259,4 +259,35 @@ public class MasterlistTest {
         assertEquals(song3, playlist.getSongList().get(1));
         assertEquals(song1, playlist.getSongList().get(2));
     }
+
+    @Test
+    public void testRenameSongInMasterlist() {
+        Masterlist masterlist = Masterlist.getInstance();
+        Song song = new Song(UUID.randomUUID(), "mp3", "Ancien Titre");
+        masterlist.addSong(song);
+
+        song.setTitre("Nouveau Titre");
+        masterlist.save();
+
+        Song retrieved = masterlist.getSong(song.getUUID());
+        assertNotNull(retrieved);
+        assertEquals("Nouveau Titre", retrieved.getTitre());
+    }
+
+    @Test
+    public void testRenameSongNotifiesListener() {
+        Masterlist masterlist = Masterlist.getInstance();
+        Song song = new Song(UUID.randomUUID(), "mp3", "Titre Initial");
+        masterlist.addSong(song);
+
+        final boolean[] notified = {false};
+        MasterlistListener listener = () -> notified[0] = true;
+        masterlist.addListener(listener);
+
+        song.setTitre("Titre Modifie");
+        masterlist.notifyListeners();
+
+        assertTrue(notified[0]);
+        masterlist.removeListener(listener);
+    }
 }

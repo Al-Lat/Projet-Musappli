@@ -68,6 +68,11 @@ public class PlayerManager {
         }, ContextCompat.getMainExecutor(appContext));
     }
 
+    PlayerManager(MediaController mediaController) {
+        this.mediaController = mediaController;
+        this.controllerFuture = null;
+    }
+
     /**
      * Retourne l'instance unique de {@link PlayerManager}.
      *
@@ -88,6 +93,10 @@ public class PlayerManager {
      * @param song Le morceau à jouer.
      */
     public void playSong(@NonNull Context context, @NonNull Song song) {
+        if (isPlayingSong(song)) {
+            return;
+        }
+
         PlaybackHistoryManager
                 .getInstance(context)
                 .addSongToHistory(context, song);
@@ -119,7 +128,7 @@ public class PlayerManager {
 
         if (mediaController != null) {
             startPlayback.run();
-        } else {
+        } else if (controllerFuture != null) {
             controllerFuture.addListener(startPlayback, ContextCompat.getMainExecutor(context));
         }
     }
@@ -134,6 +143,10 @@ public class PlayerManager {
      * @param songToPlay Le morceau sélectionné par lequel commencer la lecture.
      */
     public void playSongFromList(@NonNull Context context, List<Song> songList, @NonNull Song songToPlay) {
+        if (isPlayingSong(songToPlay)) {
+            return;
+        }
+
         PlaybackHistoryManager
                 .getInstance(context)
                 .addSongToHistory(context, songToPlay);
@@ -195,7 +208,7 @@ public class PlayerManager {
 
         if (mediaController != null) {
             startPlayback.run();
-        } else {
+        } else if (controllerFuture != null) {
             controllerFuture.addListener(startPlayback, ContextCompat.getMainExecutor(context));
         }
     }
@@ -231,6 +244,20 @@ public class PlayerManager {
      */
     public boolean isPlaying() {
         return mediaController != null && mediaController.isPlaying();
+    }
+
+    /**
+     * Indique si le morceau spécifié est actuellement en cours de lecture.
+     *
+     * @param song Le morceau à vérifier.
+     * @return {@code true} si ce morceau est actuellement en cours de lecture, {@code false} sinon.
+     */
+    public boolean isPlayingSong(Song song) {
+        if (song == null || mediaController == null || !mediaController.isPlaying()) {
+            return false;
+        }
+        MediaItem currentItem = mediaController.getCurrentMediaItem();
+        return currentItem != null && song.getUUID().toString().equals(currentItem.mediaId);
     }
 
     /**
@@ -307,7 +334,7 @@ public class PlayerManager {
     public void addListener(@NonNull Context context, @NonNull Player.Listener listener) {
         if (mediaController != null) {
             mediaController.addListener(listener);
-        } else {
+        } else if (controllerFuture != null) {
             controllerFuture.addListener(() -> {
                 if (mediaController != null) {
                     mediaController.addListener(listener);
@@ -329,11 +356,44 @@ public class PlayerManager {
     }
 
     /**
+     * Met à jour le titre du {@link MediaItem} en cours de lecture si celui-ci correspond au morceau donné.
+     * Cela permet de rafraîchir l'affichage du footer après un renommage.
+     *
+     * @param song Le morceau dont le titre vient d'être modifié.
+     */
+    public void updateCurrentMediaItemTitle(@NonNull Song song) {
+        if (mediaController == null) {
+            return;
+        }
+        String targetId = song.getUUID().toString();
+        int itemCount = mediaController.getMediaItemCount();
+        for (int i = 0; i < itemCount; i++) {
+            MediaItem item = mediaController.getMediaItemAt(i);
+            if (item != null && targetId.equals(item.mediaId)) {
+                MediaItem updatedItem = item.buildUpon()
+                        .setMediaMetadata(new MediaMetadata.Builder()
+                                .setTitle(song.getTitre())
+                                .build())
+                        .build();
+                mediaController.replaceMediaItem(i, updatedItem);
+            }
+        }
+    }
+
+    /**
      * Retourne le MediaController connecté s'il est prêt.
      *
      * @return Le {@link MediaController} ou {@code null}.
      */
     public MediaController getMediaController() {
         return mediaController;
+    }
+
+    void setMediaController(MediaController mediaController) {
+        this.mediaController = mediaController;
+    }
+
+    static void setInstance(PlayerManager instance) {
+        PlayerManager.instance = instance;
     }
 }

@@ -112,4 +112,32 @@ public class SongTest {
         assertTrue(result.contains("mp3"));
         assertTrue(result.contains(uuid.toString()));
     }
+
+    @Test
+    public void testSongRenameValid() {
+        Song song = new Song(UUID.randomUUID(), "mp3", "Ancien Titre");
+        assertEquals("Ancien Titre", song.getTitre());
+
+        song.setTitre("Nouveau Titre");
+        assertEquals("Nouveau Titre", song.getTitre());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSongRenameEmptyThrows() {
+        Song song = new Song(UUID.randomUUID(), "mp3", "Titre Initial");
+        song.setTitre("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSongRenameBlankThrows() {
+        Song song = new Song(UUID.randomUUID(), "mp3", "Titre Initial");
+        song.setTitre("   ");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("ConstantConditions")
+    public void testSongRenameNullThrows() {
+        Song song = new Song(UUID.randomUUID(), "mp3", "Titre Initial");
+        song.setTitre(null);
+    }
 }

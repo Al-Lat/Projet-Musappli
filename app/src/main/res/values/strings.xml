@@ -47,6 +47,8 @@
     <string name="import_song">Importer un son</string>
     <string name="create_new_playlist">Créer une nouvelle playlist</string>
     <string name="add_to_playlist">Ajouter à une playlist</string>
+    <string name="rename_song">Renommer ce morceau</string>
+    <string name="ask_rename_song_name">Nouveau nom du morceau :</string>
     <string name="delete_song">Supprimer ce morceau</string>
     <string name="play_playlist">Ecouter cette playlist</string>
     <string name="rename_playlist">Renommer cette playlist</string>

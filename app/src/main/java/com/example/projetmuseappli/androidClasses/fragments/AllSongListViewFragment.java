@@ -193,9 +193,11 @@ public class AllSongListViewFragment extends RecyclerListViewFragmentAbstract<So
         return new SongAdapter(getContext(), loadList(), new SongAdapter.OnSongClickListener() {
             @Override
             public void onItemClick(Song song) {
-                PlayerManager
-                        .getInstance(requireContext())
-                        .playSong(requireContext(), song);
+                PlayerManager playerManager = PlayerManager.getInstance(requireContext());
+                if (playerManager.isPlayingSong(song)) {
+                    return;
+                }
+                playerManager.playSong(requireContext(), song);
             }
 
             @Override

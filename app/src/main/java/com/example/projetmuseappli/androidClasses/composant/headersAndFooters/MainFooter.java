@@ -10,6 +10,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.Timeline;
@@ -17,14 +20,18 @@ import androidx.media3.session.MediaController;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
+import com.example.projetmuseappli.elements.Masterlist;
+import com.example.projetmuseappli.elements.MasterlistListener;
+import com.example.projetmuseappli.elements.Song;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Composant représentant le pied de page (footer) principal de l'application, gérant le bouton d'importation,
  * le bouton Play/Pause, les boutons de navigation (précédent/suivant), la barre de progression et le temps de lecture.
  */
-public class MainFooter {
+public class MainFooter implements MasterlistListener {
 
     /** Identifiant de ressource du layout du footer. */
     public static final int FOOTER_ID = R.layout.component_footer;
@@ -140,6 +147,18 @@ public class MainFooter {
         };
 
         PlayerManager.getInstance(activity).addListener(activity, playerListener);
+        Masterlist.getInstance().addListener(this);
+
+        if (activity instanceof LifecycleOwner) {
+            ((LifecycleOwner) activity).getLifecycle().addObserver(
+                    (LifecycleEventObserver) (source, event) -> {
+                        if (event == Lifecycle.Event.ON_DESTROY) {
+                            Masterlist.getInstance().removeListener(MainFooter.this);
+                            PlayerManager.getInstance(activity).removeListener(playerListener);
+                        }
+                    });
+        }
+
         updateUI();
     }
 
@@ -162,12 +181,28 @@ public class MainFooter {
 
     private void updateSongTitle(MediaItem mediaItem) {
         if (songTitleView != null) {
-            if (mediaItem != null && mediaItem.mediaMetadata.title != null) {
-                songTitleView.setText(mediaItem.mediaMetadata.title);
-                songTitleView.setVisibility(View.VISIBLE);
-            } else {
-                songTitleView.setVisibility(View.GONE);
+            if (mediaItem != null) {
+                CharSequence title = null;
+                if (mediaItem.mediaId != null) {
+                    try {
+                        UUID uuid = UUID.fromString(mediaItem.mediaId);
+                        Song song = Masterlist.getInstance().getSong(uuid);
+                        if (song != null) {
+                            title = song.getTitre();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+                if (title == null && mediaItem.mediaMetadata != null) {
+                    title = mediaItem.mediaMetadata.title;
+                }
+                if (title != null) {
+                    songTitleView.setText(title);
+                    songTitleView.setVisibility(View.VISIBLE);
+                    return;
+                }
             }
+            songTitleView.setVisibility(View.GONE);
         }
     }
 
@@ -240,7 +275,12 @@ public class MainFooter {
                                                                 ? View.VISIBLE : View.GONE);
     }
 
-    private void updateUI() {
+    @Override
+    public void onMasterlistChanged() {
+        activity.runOnUiThread(this::updateUI);
+    }
+
+    public void updateUI() {
         PlayerManager pm = PlayerManager.getInstance(activity);
         updateFooterVisibility();
         boolean isPlaying = pm.isPlaying();

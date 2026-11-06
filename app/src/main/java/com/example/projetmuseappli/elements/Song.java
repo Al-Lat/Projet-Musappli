@@ -104,6 +104,19 @@ public class Song implements Serializable {
     }
 
     /**
+     * Modifie le titre du morceau.
+     *
+     * @param titre Le nouveau titre. Ne doit pas être null ni vide.
+     * @throws IllegalArgumentException si le titre est null ou vide.
+     */
+    public void setTitre(@NonNull String titre) {
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre ne peut pas être vide");
+        }
+        this.titre = titre;
+    }
+
+    /**
      * Retourne la date d'importation du morceau dans l'application.
      *
      * @return La date {@link LocalDate} d'importation.
