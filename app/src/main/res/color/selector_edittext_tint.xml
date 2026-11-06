@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Quand on écrit dedans (avec focus) -->
+    <item android:state_focused="true" android:color="?attr/reverseTextColor" />
+    <!-- Au repos (sans focus) -->
+    <item android:color="?attr/colorPrimary" />
+</selector>

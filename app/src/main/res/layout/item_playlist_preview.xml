@@ -27,7 +27,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:text="Playlist Title"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
             android:background="@color/transparent"
             />
 
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Crée le: 01/01/2023"
-                android:textColor="?attr/textFillColor"
+                android:textColor="?attr/textColor"
                 android:background="@color/transparent"
                 />
 
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Nombre de morceaux : 1000"
-                android:textColor="?attr/textFillColor"
+                android:textColor="?attr/textColor"
                 android:background="@color/transparent"
                 />
 

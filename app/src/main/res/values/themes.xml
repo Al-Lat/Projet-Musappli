@@ -1,21 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.ProjetMuseappli" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Main Colors-->
-        <item name="colorPrimary">@color/light_orange</item>
-        <item name="colorOnBackground">@color/white</item>
-        <item name="android:itemBackground">@color/white</item>
+        <item name="colorPrimary">@color/m900_red</item>
+        <item name="colorOnBackground">@color/soft_white</item>
+        <item name="android:itemBackground">@color/soft_white</item>
 
         <!--Accent Colors-->
-        <item name="colorAccent">@color/mars_orange</item>
-        <item name="cardItemBorderColor">@color/black</item>
-        <item name="highlightingColor">@color/highlight_orange</item>
+        <item name="colorAccent">@color/m400_deep_orange</item>
+        <item name="cardItemBorderColor">@color/dark_grey</item>
+        <item name="highlightingColor">?attr/colorAccent</item>
 
 
         <!--TextColors-->
-        <item name="textFillColor">@color/black</item>
+        <item name="textColor">@color/soft_black</item>
+        <item name="reverseTextColor">@color/soft_white</item>
         <item name="textInputFilledStyle">@color/white</item>
-        <item name="android:text">@color/black</item>
-        <item name="android:itemTextAppearance">@color/black</item>
+        <item name="android:text">@color/soft_black</item>
+        <item name="android:itemTextAppearance">@color/soft_black</item>
 <!--        <item name="android:background">@color/light_background</item>-->
         
 

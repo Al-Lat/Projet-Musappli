@@ -15,7 +15,7 @@
         android:text="Mes Playlists"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="?attr/textFillColor"
+        android:textColor="?attr/textColor"
         android:padding="8dp" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:gravity="center"
         android:text="@string/no_playlist_found"
         android:textSize="18sp"
-        android:textColor="?attr/textFillColor"
+        android:textColor="?attr/textColor"
         android:padding="8dp" />
 
 
@@ -54,7 +54,7 @@
             android:layout_gravity="start"
 
             android:text="@string/cancel"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
 
             />
 
@@ -66,7 +66,7 @@
             android:layout_gravity="end"
 
             android:text="@string/create_new_playlist"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
 
             />
 

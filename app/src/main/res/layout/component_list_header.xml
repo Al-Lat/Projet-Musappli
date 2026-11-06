@@ -24,7 +24,7 @@
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_back"
-        android:textColor="?attr/textFillColor" />
+        app:tint="?attr/reverseTextColor" />
 
     <!-- Mode normal : titre de la playlist ou vue -->
     <TextView
@@ -37,7 +37,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Name"
-        android:textColor="?attr/textFillColor"
+        android:textColor="?attr/reverseTextColor"
         android:textSize="20sp"
         android:textStyle="bold"
         android:visibility="visible"/>
@@ -53,8 +53,10 @@
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:maxLines="1"
-        android:textColor="?attr/textFillColor"
-        android:textColorHint="?attr/textFillColor"
+        android:textColor="?attr/reverseTextColor"
+        android:textColorHint="?attr/reverseTextColor"
+        android:backgroundTint="@color/selector_edittext_tint"
+        android:textCursorDrawable="@null"
         android:visibility="gone" />
 
     <!-- Mode normal : ouvrir la recherche -->
@@ -69,6 +71,7 @@
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_search"
+        app:tint="?attr/reverseTextColor"
         android:visibility="visible"/>
 
     <!-- Mode recherche : effacer le texte -->
@@ -83,6 +86,7 @@
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_close"
+        app:tint="?attr/reverseTextColor"
         android:visibility="gone" />
 
     <!-- Mode tri : afficher le menu de tri -->
@@ -97,6 +101,7 @@
         android:background="@drawable/background_standard_no_border"
         app:backgroundTint="@null"
         android:src="@drawable/ic_sort"
+        app:tint="?attr/reverseTextColor"
         android:contentDescription="@string/action_sort"
         android:visibility="gone" />
 

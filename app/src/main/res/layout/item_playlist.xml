@@ -39,7 +39,7 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:text="Playlist Title"
-                android:textColor="?attr/textFillColor"
+                android:textColor="?attr/reverseTextColor"
                 android:background="?attr/colorPrimary"
                 />
             <LinearLayout
@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:text="Crée le: 01/01/2023"
-                    android:textColor="?attr/textFillColor"
+                    android:textColor="?attr/reverseTextColor"
                     android:background="?attr/colorPrimary"
                     />
 
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:text="999 Morceaux"
-                    android:textColor="?attr/textFillColor"
+                    android:textColor="?attr/reverseTextColor"
                     android:background="?attr/colorPrimary"
                     />
 
@@ -82,7 +82,7 @@
             android:scaleType="fitCenter"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/menuburger"
-            app:tint="?attr/textFillColor"
+            app:tint="?attr/reverseTextColor"
             android:contentDescription="Options" />
 
     </LinearLayout>

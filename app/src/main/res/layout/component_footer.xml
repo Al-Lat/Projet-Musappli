@@ -9,7 +9,7 @@
     android:paddingHorizontal="0dp"
     android:paddingVertical="8dp"
     android:gravity="center"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <!-- Ligne de séparation avec le corps de la vue -->
     <View
@@ -36,7 +36,7 @@
             android:layout_marginHorizontal="12dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
             android:textSize="13sp"
             android:visibility="gone" />
 
@@ -50,8 +50,8 @@
             android:paddingHorizontal="8dp"
             android:progress="0"
             android:progressTint="?attr/colorAccent"
-            android:thumbTint="?attr/textFillColor"
-            android:progressBackgroundTint="?attr/textFillColor" />
+            android:thumbTint="?attr/textColor"
+            android:progressBackgroundTint="?attr/textColor" />
 
         <!-- Playback Time Text -->
         <TextView
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:paddingVertical="2dp"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
             android:textSize="13sp"
             android:singleLine="true"
             android:text="@string/default_time_format" />
@@ -73,15 +73,22 @@
             android:gravity="center"
             android:layout_marginTop="4dp">
 
+            <!-- Espaceur gauche pour équilibrer le bouton replay et centrer play/pause -->
+            <View
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="15dp"
+                android:visibility="invisible" />
+
             <!-- Previous Song Button -->
             <ImageButton
                 android:id="@+id/previousButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="25dp"
+                android:layout_marginEnd="15dp"
                 android:src="@drawable/ic_skip_previous"
                 android:background="@drawable/background_menu_button"
-                app:tint="?attr/textFillColor"
+                app:tint="?attr/reverseTextColor"
                 android:visibility="invisible"
                 android:contentDescription="@string/previous_song_button_text" />
 
@@ -92,7 +99,7 @@
                 android:layout_height="48dp"
                 android:src="@drawable/ic_play"
                 android:background="@drawable/background_menu_button"
-                app:tint="?attr/textFillColor"
+                app:tint="?attr/reverseTextColor"
                 android:contentDescription="@string/play_pause_button_text" />
 
             <!-- Next Song Button -->
@@ -100,16 +107,23 @@
                 android:id="@+id/nextButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="25dp"
+                android:layout_marginStart="15dp"
                 android:src="@drawable/ic_skip_next"
                 android:background="@drawable/background_menu_button"
-                app:tint="?attr/textFillColor"
+                app:tint="?attr/reverseTextColor"
                 android:visibility="invisible"
                 android:contentDescription="@string/next_song_button_text" />
 
-
-
-
+            <!-- Replay Song Button -->
+            <ImageButton
+                android:id="@+id/replayButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/selector_replay_icon"
+                android:background="@drawable/selector_replay_background"
+                app:tint="?attr/reverseTextColor"
+                android:contentDescription="@string/replay_button_off_text" />
 
         </LinearLayout>
 

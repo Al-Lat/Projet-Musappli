@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/import_title"
-        android:textColor="?attr/textFillColor"
+        android:textColor="?attr/textColor"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp" />
@@ -23,10 +23,10 @@
         android:paddingHorizontal="24dp"
         android:paddingVertical="12dp"
         android:text="@string/import_local_button_text"
-        android:textColor="?attr/textFillColor"
+        android:textColor="?attr/reverseTextColor"
         android:textSize="16sp"
         app:icon="@drawable/ic_add"
-        app:iconTint="?attr/textFillColor"
+        app:iconTint="?attr/reverseTextColor"
         app:backgroundTint="?attr/colorPrimary" />
 
 </LinearLayout>

@@ -47,7 +47,7 @@
             android:src="@drawable/menuburger"
             android:contentDescription="@string/action_selection_desc"
             app:backgroundTint="?attr/colorPrimary"
-            app:tint="?attr/textFillColor" />
+            app:tint="?attr/textColor" />
 
     </FrameLayout>
 

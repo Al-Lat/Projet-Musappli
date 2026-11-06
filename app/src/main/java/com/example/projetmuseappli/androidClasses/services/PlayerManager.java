@@ -33,6 +33,7 @@ public class PlayerManager {
     private static PlayerManager instance;
     private MediaController mediaController;
     private final ListenableFuture<MediaController> controllerFuture;
+    private boolean isReplayEnabled = false;
 
     private PlayerManager(Context context) {
         Context appContext = context.getApplicationContext();
@@ -42,25 +43,8 @@ public class PlayerManager {
             try {
                 mediaController = controllerFuture.get();
                 if (mediaController != null) {
-                    mediaController.addListener(new Player.Listener() {
-                        @Override
-                        public void onMediaItemTransition(MediaItem mediaItem, int reason) {
-                            if (mediaItem != null && mediaItem.mediaId != null) {
-                                try {
-                                    UUID uuid = UUID.fromString(mediaItem.mediaId);
-                                    Song song = Masterlist.getInstance().getSong(uuid);
-                                    if (song != null) {
-                                        PlaybackHistoryManager
-                                                .getInstance(appContext)
-                                                .addSongToHistory(appContext, song);
-                                    }
-                                } catch (Exception e) {
-                                    // mediaId invalide ou song introuvable : cas non bloquant
-                                    Log.w("PlayerManager", "onMediaItemTransition: impossible de retrouver le morceau", e);
-                                }
-                            }
-                        }
-                    });
+                    mediaController.setRepeatMode(isReplayEnabled ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_OFF);
+                    mediaController.addListener(createPlayerListener(appContext));
                 }
             } catch (Exception e) {
                 Log.e("PlayerManager", "Erreur lors de l'initialisation du MediaController", e);
@@ -68,7 +52,39 @@ public class PlayerManager {
         }, ContextCompat.getMainExecutor(appContext));
     }
 
-    PlayerManager(MediaController mediaController) {
+    @androidx.annotation.VisibleForTesting
+    Player.Listener createPlayerListener(Context appContext) {
+        return new Player.Listener() {
+            @Override
+            public void onMediaItemTransition(MediaItem mediaItem, int reason) {
+                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+                    return;
+                }
+                if (mediaItem != null && mediaItem.mediaId != null) {
+                    try {
+                        UUID uuid = UUID.fromString(mediaItem.mediaId);
+                        Song song = Masterlist.getInstance().getSong(uuid);
+                        if (song != null) {
+                            PlaybackHistoryManager
+                                    .getInstance(appContext)
+                                    .addSongToHistory(appContext, song);
+                        }
+                    } catch (Exception e) {
+                        // mediaId invalide ou song introuvable : cas non bloquant
+                        Log.w("PlayerManager", "onMediaItemTransition: impossible de retrouver le morceau", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+                isReplayEnabled = (repeatMode == Player.REPEAT_MODE_ONE);
+            }
+        };
+    }
+
+    @androidx.annotation.VisibleForTesting
+    public PlayerManager(MediaController mediaController) {
         this.mediaController = mediaController;
         this.controllerFuture = null;
     }
@@ -118,7 +134,7 @@ public class PlayerManager {
 
         Runnable startPlayback = () -> {
             if (mediaController != null) {
-                mediaController.setRepeatMode(Player.REPEAT_MODE_OFF);
+                mediaController.setRepeatMode(isReplayEnabled ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_OFF);
                 mediaController.setMediaItem(mediaItem);
                 mediaController.prepare();
                 mediaController.play();
@@ -198,7 +214,7 @@ public class PlayerManager {
         final int finalStartIndex = startIndex;
         Runnable startPlayback = () -> {
             if (mediaController != null) {
-                mediaController.setRepeatMode(Player.REPEAT_MODE_OFF);
+                mediaController.setRepeatMode(isReplayEnabled ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_OFF);
                 mediaController.setMediaItems(mediaItems, finalStartIndex, 0L);
                 mediaController.prepare();
                 mediaController.play();
@@ -381,6 +397,34 @@ public class PlayerManager {
     }
 
     /**
+     * Indique si la relecture en boucle du même morceau est activée.
+     *
+     * @return {@code true} si la relecture est activée, {@code false} sinon.
+     */
+    public boolean isReplayEnabled() {
+        return isReplayEnabled;
+    }
+
+    /**
+     * Active ou désactive la relecture en boucle du même morceau.
+     *
+     * @param enabled {@code true} pour activer la relecture, {@code false} pour la désactiver.
+     */
+    public void setReplayEnabled(boolean enabled) {
+        this.isReplayEnabled = enabled;
+        if (mediaController != null) {
+            mediaController.setRepeatMode(enabled ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_OFF);
+        }
+    }
+
+    /**
+     * Alterne l'état d'activation de la relecture du même morceau.
+     */
+    public void toggleReplay() {
+        setReplayEnabled(!isReplayEnabled);
+    }
+
+    /**
      * Retourne le MediaController connecté s'il est prêt.
      *
      * @return Le {@link MediaController} ou {@code null}.
@@ -393,7 +437,8 @@ public class PlayerManager {
         this.mediaController = mediaController;
     }
 
-    static void setInstance(PlayerManager instance) {
+    @androidx.annotation.VisibleForTesting
+    public static void setInstance(PlayerManager instance) {
         PlayerManager.instance = instance;
     }
 }

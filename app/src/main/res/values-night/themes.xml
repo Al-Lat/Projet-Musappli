@@ -1,21 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.ProjetMuseappli" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Main Colors-->
-        <item name="colorPrimary">@color/ocean_blue</item>
-        <item name="colorOnBackground">@color/dark_purple</item>
-        <item name="android:itemBackground">@color/ocean_blue</item>
+        <item name="colorPrimary">@color/m800_deep_purple</item>
+        <item name="colorOnBackground">@color/m900_blue_grey</item>
+        <item name="android:itemBackground">?attr/colorOnBackground</item>
 
         <!--Accent Colors-->
-        <item name="colorAccent">@color/yellow</item>
-        <item name="cardItemBorderColor">?attr/colorPrimary</item><!--bordure "invisible"-->
-        <item name="highlightingColor">@color/highlight_blue</item>
+        <item name="colorAccent">@color/mA200_deep_purple</item>
+        <item name="cardItemBorderColor">@color/m700_blue_grey</item><!--bordure "invisible"-->
+        <item name="highlightingColor">@color/m100_blue</item>
 
 
         <!--TextColors-->
-        <item name="textFillColor">@color/white</item>
-        <item name="textInputFilledStyle">@color/black</item>
-        <item name="android:text">@color/white</item>
-        <item name="android:itemTextAppearance">@color/white</item>
+        <item name="textColor">@color/soft_white</item>
+        <item name="reverseTextColor">@color/soft_white</item>
+        <item name="textInputFilledStyle">@color/soft_black</item>
+        <item name="android:text">@color/soft_white</item>
+        <item name="android:itemTextAppearance">@color/soft_white</item>
 
 
 

@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/no_songs_found"
-            android:textColor="?attr/textFillColor"
+            android:textColor="?attr/textColor"
             android:textStyle="bold"
             android:textSize="25sp"
             android:gravity="center" />
@@ -45,7 +45,7 @@
             android:src="@drawable/menuburger"
             android:contentDescription="@string/action_selection_desc"
             app:backgroundTint="?attr/colorPrimary"
-            app:tint="?attr/textFillColor"
+            app:tint="?attr/textColor"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,7 +15,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.Timeline;
-import androidx.media3.session.MediaController;
 
 import com.example.projetmuseappli.R;
 import com.example.projetmuseappli.androidClasses.services.PlayerManager;
@@ -29,7 +27,7 @@ import java.util.UUID;
 
 /**
  * Composant représentant le pied de page (footer) principal de l'application, gérant le bouton d'importation,
- * le bouton Play/Pause, les boutons de navigation (précédent/suivant), la barre de progression et le temps de lecture.
+ * le bouton Play/Pause, les boutons de navigation (précédent/suivant), le bouton de relecture, la barre de progression et le temps de lecture.
  */
 public class MainFooter implements MasterlistListener {
 
@@ -42,6 +40,7 @@ public class MainFooter implements MasterlistListener {
     private final ImageButton boutonPlayPause;
     private final ImageButton previousButton;
     private final ImageButton nextButton;
+    private final ImageButton replayButton;
     private final SeekBar playbackSeekBar;
     private final TextView songTitleView;
     private final TextView playbackTimeText;
@@ -81,6 +80,11 @@ public class MainFooter implements MasterlistListener {
         }
 
         @Override
+        public void onRepeatModeChanged(int repeatMode) {
+            updateReplayButton();
+        }
+
+        @Override
         public void onTimelineChanged(@NonNull Timeline timeline, int reason) {
             updateUI();
         }
@@ -98,6 +102,7 @@ public class MainFooter implements MasterlistListener {
         boutonPlayPause = activity.findViewById(R.id.playPauseButton);
         previousButton = activity.findViewById(R.id.previousButton);
         nextButton = activity.findViewById(R.id.nextButton);
+        replayButton = activity.findViewById(R.id.replayButton);
         playbackSeekBar = activity.findViewById(R.id.playbackSeekBar);
         songTitleView = activity.findViewById(R.id.currentSongTitle);
         playbackTimeText = activity.findViewById(R.id.playbackTimeText);
@@ -112,6 +117,13 @@ public class MainFooter implements MasterlistListener {
 
         if (nextButton != null) {
             nextButton.setOnClickListener(v -> PlayerManager.getInstance(activity).seekToNext());
+        }
+
+        if (replayButton != null) {
+            replayButton.setOnClickListener(v -> {
+                PlayerManager.getInstance(activity).toggleReplay();
+                updateReplayButton();
+            });
         }
 
         if (playbackSeekBar != null) {
@@ -177,6 +189,19 @@ public class MainFooter implements MasterlistListener {
         if (nextButton != null) {
             nextButton.setVisibility(pm.hasNext() ? View.VISIBLE : View.INVISIBLE);
         }
+    }
+
+    private void updateReplayButton() {
+        if (replayButton == null) return;
+        boolean isReplay = PlayerManager.getInstance(activity).isReplayEnabled();
+        replayButton.setSelected(isReplay);
+        replayButton.setContentDescription(activity.getString(
+                isReplay ? R.string.replay_button_on_text : R.string.replay_button_off_text));
+
+    }
+
+    public ImageButton getReplayButton() {
+        return replayButton;
     }
 
     private void updateSongTitle(MediaItem mediaItem) {
@@ -286,6 +311,7 @@ public class MainFooter implements MasterlistListener {
         boolean isPlaying = pm.isPlaying();
         updatePlayPauseButton(isPlaying);
         updateNavigationButtons();
+        updateReplayButton();
         updateProgress();
 
         if (pm.hasSongLoaded()) {

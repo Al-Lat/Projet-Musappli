@@ -35,6 +35,9 @@
     <string name="play_pause_button_text">Lecture / Pause</string>
     <string name="previous_song_button_text">Morceau précédent</string>
     <string name="next_song_button_text">Morceau suivant</string>
+    <string name="replay_button_text">Relecture du morceau</string>
+    <string name="replay_button_on_text">Relecture : activée</string>
+    <string name="replay_button_off_text">Relecture : désactivée</string>
     <string name="default_time_format">00:00:00 / 00:00:00</string>
 
     <!--ItemCard (item pour chaque son/playlist)-->
