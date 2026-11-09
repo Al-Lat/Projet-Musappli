@@ -75,5 +75,5 @@
     <string name="FEATURE_TODO">Fonctionalité pas encore ajouté</string>
     <string name="ERROR_MESSAGE_PREVIEW">Apercu d\'un message d\'erreur</string>
     <string name="ERROR_MESSAGE_SONG_ALREADY_IN_PLAYLIST">Ce morceau est deja dans cette playlist</string>
-
+    <string name="ERROR_MESSAGE_SONG_FILE_ALREADY_EXISTS_FORMAT">Fichier son identique dans %s détecté à l\'import de : %s </string>
 </resources>

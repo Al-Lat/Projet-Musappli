@@ -25,11 +25,30 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Classe utilitaire proposant diverses fonctions d'aide pour la gestion des fichiers et des URI.
- * Constructeur privé : cette classe ne doit pas être instanciée (SonarQube java:S1118).
  */
 public class Utilitaries {
+
+    private static final Pattern TITLE_INCREMENT_PATTERN = Pattern.compile("^\\((\\d+)\\) - (.*)$", Pattern.DOTALL);
+
+    /**
+     * Préfixe le titre avec "(1) - ", ou remplace n par n+1 si le titre commence déjà par "(n) - ".
+     *
+     * @param title Le titre du morceau.
+     * @return Le titre mis à jour.
+     */
+    public static String incrementSongTitle(@NonNull String title) {
+        Matcher matcher = TITLE_INCREMENT_PATTERN.matcher(title);
+        if (matcher.matches()) {
+            int n = Integer.parseInt(matcher.group(1));
+            return "(" + (n + 1) + ") - " + matcher.group(2);
+        }
+        return "(1) - " + title;
+    }
 
     /**
      * Extrait et retourne le nom affichable d'un fichier à partir de son {@link Uri}.

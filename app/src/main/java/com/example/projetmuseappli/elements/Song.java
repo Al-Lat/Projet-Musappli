@@ -86,6 +86,17 @@ public class Song implements Serializable {
     }
 
     /**
+     * Retourne le fichier physique associé à ce morceau dans le stockage interne de l'application.
+     *
+     * @param context Le contexte Android permettant d'accéder au dossier {@code filesDir}.
+     * @return L'objet {@link java.io.File} pointant vers le fichier audio.
+     */
+    @NonNull
+    public java.io.File getAudioFile(@NonNull android.content.Context context) {
+        return new java.io.File(context.getFilesDir(), uuid.toString() + "." + Extension);
+    }
+
+    /**
      * Retourne l'extension du fichier audio.
      *
      * @return L'extension sous forme de chaîne.

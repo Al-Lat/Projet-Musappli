@@ -290,4 +290,116 @@ public class MasterlistTest {
         assertTrue(notified[0]);
         masterlist.removeListener(listener);
     }
+
+    @Test
+    public void testContainsSongByUriExactMatch() throws java.io.IOException {
+        Masterlist masterlist = Masterlist.getInstance();
+
+        UUID uuid = UUID.randomUUID();
+        Song song = new Song(uuid, "mp3", "Unique Song");
+        masterlist.addSong(song);
+
+        // Créer le fichier local correspondant au Song dans filesDir
+        File localFile = song.getAudioFile(context);
+        byte[] content = "Audio stream payload 12345".getBytes();
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(localFile)) {
+            fos.write(content);
+        }
+
+        // Créer un fichier source temporaire ayant le même contenu binaire
+        File tempFile = new File(context.getCacheDir(), "source_temp.mp3");
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
+            fos.write(content);
+        }
+
+        android.net.Uri uri = android.net.Uri.fromFile(tempFile);
+
+        assertTrue("Masterlist doit reconnaître le fichier identique via URI", masterlist.containsSongFile(context, uri));
+        assertTrue("Masterlist doit reconnaître le fichier via la surcharge sans context", masterlist.containsSongFile(uri));
+
+        localFile.delete();
+        tempFile.delete();
+    }
+
+    @Test
+    public void testContainsSongByUriNotFound() throws java.io.IOException {
+        Masterlist masterlist = Masterlist.getInstance();
+
+        UUID uuid = UUID.randomUUID();
+        Song song = new Song(uuid, "mp3", "Existing Song");
+        masterlist.addSong(song);
+
+        File localFile = song.getAudioFile(context);
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(localFile)) {
+            fos.write("Contenu du morceau existant".getBytes());
+        }
+
+        // Fichier externe avec un contenu différent
+        File differentTempFile = new File(context.getCacheDir(), "different_temp.mp3");
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(differentTempFile)) {
+            fos.write("Contenu totalement distinct".getBytes());
+        }
+
+        android.net.Uri uri = android.net.Uri.fromFile(differentTempFile);
+
+        assertFalse("Masterlist doit retourner false pour un fichier différent", masterlist.containsSongFile(context, uri));
+
+        localFile.delete();
+        differentTempFile.delete();
+    }
+
+    @Test
+    public void testGetSongByUriExactMatch() throws java.io.IOException {
+        Masterlist masterlist = Masterlist.getInstance();
+
+        UUID uuid = UUID.randomUUID();
+        Song song = new Song(uuid, "mp3", "GetSong URI Match");
+        masterlist.addSong(song);
+
+        File localFile = song.getAudioFile(context);
+        byte[] content = "Audio unique getSong payload".getBytes();
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(localFile)) {
+            fos.write(content);
+        }
+
+        File tempFile = new File(context.getCacheDir(), "source_get_song_temp.mp3");
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
+            fos.write(content);
+        }
+
+        android.net.Uri uri = android.net.Uri.fromFile(tempFile);
+
+        assertEquals("getSong(context, uri) doit retourner le morceau correspondant", song, masterlist.getSong(context, uri));
+        assertEquals("getSong(uri) doit retourner le morceau correspondant", song, masterlist.getSong(uri));
+
+        localFile.delete();
+        tempFile.delete();
+    }
+
+    @Test
+    public void testGetSongByUriNotFound() throws java.io.IOException {
+        Masterlist masterlist = Masterlist.getInstance();
+
+        UUID uuid = UUID.randomUUID();
+        Song song = new Song(uuid, "mp3", "GetSong Not Found");
+        masterlist.addSong(song);
+
+        File localFile = song.getAudioFile(context);
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(localFile)) {
+            fos.write("Contenu audio A".getBytes());
+        }
+
+        File differentTempFile = new File(context.getCacheDir(), "source_different_temp.mp3");
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(differentTempFile)) {
+            fos.write("Contenu audio B différent".getBytes());
+        }
+
+        android.net.Uri uri = android.net.Uri.fromFile(differentTempFile);
+
+        assertNull("getSong(context, uri) doit retourner null si aucun morceau ne correspond", masterlist.getSong(context, uri));
+        assertNull("getSong(uri) doit retourner null si aucun morceau ne correspond", masterlist.getSong(uri));
+
+        localFile.delete();
+        differentTempFile.delete();
+    }
 }

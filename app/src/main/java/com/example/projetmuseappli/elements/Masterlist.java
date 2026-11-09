@@ -19,9 +19,14 @@
 package com.example.projetmuseappli.elements;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.example.projetmuseappli.androidClasses.utilitaries.AudioFileComparator;
+
+import java.io.File;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -212,6 +217,39 @@ public class Masterlist implements Serializable {
     }
 
     /**
+     * Récupère un morceau dont le fichier audio correspond à celui désigné par son {@link Uri}.
+     *
+     * @param context Le contexte Android pour accéder au ContentResolver et au stockage privé.
+     * @param fileUri L'{@link Uri} du fichier audio recherché.
+     * @return Le morceau {@link Song} correspondant, ou {@code null} si non trouvé.
+     */
+    public Song getSong(@NonNull Context context, @NonNull Uri fileUri) {
+        for (Song songInList : this.masterlistSongHashMap.values()) {
+            File localAudioFile = songInList.getAudioFile(context);
+            if (AudioFileComparator.areEqual(context, fileUri, localAudioFile)) {
+                return songInList;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Récupère un morceau dont le fichier audio correspond à celui désigné par son {@link Uri}.
+     * Utilise le contexte applicatif initialisé lors de {@link #init(Context)}.
+     *
+     * @param fileUri L'{@link Uri} du fichier audio recherché.
+     * @return Le morceau {@link Song} correspondant, ou {@code null} si non trouvé.
+     * @throws IllegalStateException si {@link #init(Context)} n'a pas encore été appelé.
+     */
+    public Song getSong(@NonNull Uri fileUri) {
+        if (appContext == null) {
+            throw new IllegalStateException("Masterlist n'est pas initialisée avec un contexte. "
+                    + "Appelez init(context) ou utilisez getSong(context, fileUri).");
+        }
+        return getSong(appContext, fileUri);
+    }
+
+    /**
      * Supprime un morceau de la Masterlist en utilisant son identifiant UUID.
      *
      * @param uuid L'identifiant {@link UUID} du morceau à supprimer.
@@ -233,6 +271,59 @@ public class Masterlist implements Serializable {
      */
     public void removeSong(@NonNull Song song){
         removeSong(song.getUUID());
+    }
+
+    /**
+     * Verifie si un son existe deja avec le meme nom dans l'application,
+     * seul les noms sont comparées, le fichier son en lui meme n'est pas testé
+     *
+     * @see com.example.projetmuseappli.elements.Masterlist#containsSongFile
+     *
+     * @param songName Le titre a chercher, la casse sera ignoré
+     * @return true si le titre est trouvé, false sinon
+     */
+    public boolean containsSongName(@NonNull String songName){
+        for (Song songInList : this.masterlistSongHashMap.values()) {
+            if(songInList.getTitre().toLowerCase().trim()
+                    .equals(songName.toLowerCase().trim()  )){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si un fichier audio désigné par son {@link Uri} est déjà présent dans la Masterlist
+     * en comparant son contenu et ses propriétés audio aux morceaux existants.
+     *
+     * @param context Le contexte Android pour accéder au ContentResolver et au stockage privé.
+     * @param uri     L'{@link Uri} du fichier audio à comparer.
+     * @return {@code true} si un morceau identique ou équivalent existe déjà dans la Masterlist, {@code false} sinon.
+     */
+    public boolean containsSongFile(@NonNull Context context, @NonNull Uri uri) {
+        for (Song songInList : this.masterlistSongHashMap.values()) {
+            File localAudioFile = songInList.getAudioFile(context);
+            if (AudioFileComparator.areEqual(context, uri, localAudioFile)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si un fichier audio désigné par son {@link Uri} est déjà présent dans la Masterlist.
+     * Utilise le contexte applicatif initialisé lors de {@link #init(Context)}.
+     *
+     * @param uri L'{@link Uri} du fichier audio à comparer.
+     * @return {@code true} si un morceau identique existe déjà, {@code false} sinon.
+     * @throws IllegalStateException si {@link #init(Context)} n'a pas encore été appelé.
+     */
+    public boolean containsSongFile(@NonNull Uri uri) {
+        if (appContext == null) {
+            throw new IllegalStateException("Masterlist n'est pas initialisée avec un contexte. "
+                    + "Appelez init(context) ou utilisez containsSong(context, uri).");
+        }
+        return containsSongFile(appContext, uri);
     }
 
     /**
@@ -403,5 +494,7 @@ public class Masterlist implements Serializable {
             removePlaylist(playlist);
         }
     }
+
+
 
 }

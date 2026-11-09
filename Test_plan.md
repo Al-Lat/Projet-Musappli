@@ -121,7 +121,7 @@ L'application repose sur deux niveaux de tests automatisés :
   - **Description** : Simuler un problème d'accès/lecture I/O au flux source.
   - **Résultat attendu** : `RuntimeException` capturant l'erreur.
 
-#### 3. `ImportHelper` (`src/androidTest`)
+#### 3. `LocalImportStrategy` (`src/androidTest`)
 - **`testLauncherRegistration`** :
   - **Description** : S'assurer que le sélecteur de documents est initialisé avec les formats autorisés dans `Masterlist.ACCEPTED_FORMATS`.
 - **`testImportSongCall`** :
